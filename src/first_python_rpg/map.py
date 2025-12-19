@@ -21,7 +21,22 @@ class Map:
         self.tile_size = 256 // MAP_SIZE  # Calculate tile size based on screen size
 
     def generate_map(self, procedural=False):
-        """Generate a simple procedural map"""
+        """Generate the game map.
+
+        Args:
+            procedural: If True, generates a random procedural map.
+                       If False, generates a balanced fixed map.
+
+        Returns:
+            A 2D grid of tile characters.
+        """
+        if procedural:
+            return self._generate_procedural_map()
+        else:
+            return self._generate_fixed_map()
+
+    def _generate_procedural_map(self):
+        """Generate a random procedural map with varied terrain."""
         grid = []
         tile_types = [".", "~", "#", "^", "o", "T", "R"]
         weights = [30, 10, 10, 20, 10, 10, 10]
@@ -36,6 +51,51 @@ class Map:
                     tile = random.choices(tile_types, weights=weights, k=1)[0]
                 row.append(tile)
             grid.append(row)
+
+        # Ensure player spawn point is walkable
+        center = self.size // 2
+        grid[center][center] = "."
+
+        return grid
+
+    def _generate_fixed_map(self):
+        """Generate a designed, balanced fixed map for consistent gameplay.
+
+        This map is hand-crafted for fair exploration with:
+        - Clear paths for navigation
+        - Strategic obstacle placement
+        - Balanced resource distribution
+        """
+        # Fixed 11x11 map design
+        # Legend: . = dirt, ^ = grass, ~ = sand, o = water, T = tree, R = rock, # = stone
+        fixed_layout = [
+            "RRRRRRRRRRR",  # Row 0: Border
+            "R.^^.T.^^.R",  # Row 1: Grass clearing with tree
+            "R^..~..~^.R",  # Row 2: Mixed terrain
+            "R.~oo~oo~.R",  # Row 3: Water pond
+            "RT.~..~.T.R",  # Row 4: Trees and path
+            "R...^.^...R",  # Row 5: Center - player spawn area
+            "R.T.^.^.T.R",  # Row 6: Trees flanking path
+            "R.~oo~oo~.R",  # Row 7: Another water feature
+            "R^..~..~^.R",  # Row 8: Mixed terrain
+            "R.^^.T.^^.R",  # Row 9: Grass clearing with tree
+            "RRRRRRRRRRR",  # Row 10: Border
+        ]
+
+        grid = []
+        for row_str in fixed_layout:
+            row = list(row_str)
+            # Pad or trim to match map size
+            while len(row) < self.size:
+                row.append("R")
+            row = row[: self.size]
+            grid.append(row)
+
+        # Pad rows if needed
+        while len(grid) < self.size:
+            grid.append(["R"] * self.size)
+        grid = grid[: self.size]
+
         return grid
 
     def is_walkable(self, x, y):

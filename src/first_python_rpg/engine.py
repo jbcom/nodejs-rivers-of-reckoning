@@ -67,6 +67,10 @@ class Engine:
             return keys[pygame.K_q]
         if key == "w":
             return keys[pygame.K_w]
+        if key == "a":
+            return keys[pygame.K_a]
+        if key == "s":
+            return keys[pygame.K_s]
         return False
 
     def cls(self, color):
