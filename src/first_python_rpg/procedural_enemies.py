@@ -75,8 +75,6 @@ def generate_enemy_sprite(enemy_sprites, overlays, variant):
     return None
 
 
-def generate_procedural_enemy_sprite(
-    base_surface, color_tint=None, overlay=None, overlay_alpha=128
-):
+def generate_procedural_enemy_sprite(base_surface, color_tint=None, overlay=None, overlay_alpha=128):
     """Legacy function - not used in Pyxel version"""
     return None

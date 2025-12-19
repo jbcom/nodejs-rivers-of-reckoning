@@ -157,4 +157,5 @@ if __name__ == "__main__":
 
     print(f"\nResults: {passed} passed, {failed} failed")
     import sys
+
     sys.exit(0 if failed == 0 else 1)

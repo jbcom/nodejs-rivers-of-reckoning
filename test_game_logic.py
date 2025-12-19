@@ -91,10 +91,7 @@ def test_difficulty_levels():
     hard = Player("Hard")
     assert easy.max_health == 10
     assert hard.max_health == 10
-    assert (
-        DIFFICULTY_LEVELS["Easy"]["enemy_health_scale"]
-        < DIFFICULTY_LEVELS["Hard"]["enemy_health_scale"]
-    )
+    assert DIFFICULTY_LEVELS["Easy"]["enemy_health_scale"] < DIFFICULTY_LEVELS["Hard"]["enemy_health_scale"]
 
 
 # Spell usage

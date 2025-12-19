@@ -3,10 +3,11 @@ import sys
 import os
 
 # Add src to path
-sys.path.insert(0, 'src')
+sys.path.insert(0, "src")
 
 import pyxel
 from first_python_rpg.game import Game
+
 
 class WebGame(Game):
     def __init__(self):
@@ -78,6 +79,7 @@ class WebGame(Game):
 
         pyxel.run(self.update, self.draw)
 
+
 async def main():
     g = WebGame()
     # In pygbag, if we call a blocking function, it blocks.
@@ -98,6 +100,7 @@ async def main():
     # But I'll stick to the "pygbag" instruction.
 
     g.run()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -9,9 +9,7 @@ def shop_menu(stdscr, player):
         stdscr.addstr(3, 2, f"Gold: {player.gold}")
         for idx, item in enumerate(SHOP_ITEMS):
             level = getattr(player, f"{item['effect']}_level", 0)
-            owned = (
-                f" (level {level})" if item["effect"] != "potion" and level > 0 else ""
-            )
+            owned = f" (level {level})" if item["effect"] != "potion" and level > 0 else ""
             stdscr.addstr(
                 5 + idx,
                 4,

@@ -126,13 +126,9 @@ class Game:
     def update_feature_select(self):
         """Handle feature selection state"""
         if pyxel.btnp(pyxel.KEY_UP):
-            self.selected_feature = (self.selected_feature - 1) % len(
-                self.feature_names
-            )
+            self.selected_feature = (self.selected_feature - 1) % len(self.feature_names)
         elif pyxel.btnp(pyxel.KEY_DOWN):
-            self.selected_feature = (self.selected_feature + 1) % len(
-                self.feature_names
-            )
+            self.selected_feature = (self.selected_feature + 1) % len(self.feature_names)
         elif pyxel.btnp(pyxel.KEY_SPACE):
             # Toggle selected feature
             feature_name = self.feature_names[self.selected_feature][1]
@@ -147,27 +143,17 @@ class Game:
     def draw_feature_select(self):
         """Draw enhanced feature selection screen"""
         pyxel.text(self.WINDOW_WIDTH // 2 - 35, 15, "RPG ENHANCED", self.colors["text"])
-        pyxel.text(
-            self.WINDOW_WIDTH // 2 - 30, 25, "FEATURE SELECT", self.colors["text"]
-        )
+        pyxel.text(self.WINDOW_WIDTH // 2 - 30, 25, "FEATURE SELECT", self.colors["text"])
 
         for i, (display_name, feature_name) in enumerate(self.feature_names):
             y = 45 + i * 15
-            color = (
-                self.colors["highlight"]
-                if i == self.selected_feature
-                else self.colors["text"]
-            )
+            color = self.colors["highlight"] if i == self.selected_feature else self.colors["text"]
             status = "ON" if self.features[feature_name] else "OFF"
 
             # Show feature name
             pyxel.text(10, y, display_name, color)
             # Show status
-            status_color = (
-                self.colors["success"]
-                if self.features[feature_name]
-                else self.colors["warning"]
-            )
+            status_color = self.colors["success"] if self.features[feature_name] else self.colors["warning"]
             pyxel.text(180, y, status, status_color)
 
         # Instructions
@@ -271,13 +257,9 @@ class Game:
                 if self.features["particle_effects"]:
                     player_x = self.player.x * (self.WINDOW_WIDTH // MAP_SIZE)
                     player_y = self.player.y * (self.WINDOW_HEIGHT // MAP_SIZE) + 20
-                    self.particle_system.create_spell_effect(
-                        player_x, player_y, "fireball"
-                    )
+                    self.particle_system.create_spell_effect(player_x, player_y, "fireball")
 
-                self.event_message = (
-                    f"Enemy Encounter! Took {dmg} damage from a {enemy.name}."
-                )
+                self.event_message = f"Enemy Encounter! Took {dmg} damage from a {enemy.name}."
                 self.event_timer = 180
                 if self.player.health <= 0:
                     self.state = "gameover"
@@ -302,9 +284,7 @@ class Game:
         if self.current_quest:
             self.current_quest["completed"] = True
             self.player.gold += self.current_quest["reward"]
-            self.event_message = (
-                f"Quest completed! Received {self.current_quest['reward']} gold."
-            )
+            self.event_message = f"Quest completed! Received {self.current_quest['reward']} gold."
             self.event_timer = 180
 
             # Generate new quest
@@ -398,11 +378,7 @@ class Game:
 
         # Status
         status = "COMPLETED" if self.current_quest["completed"] else "IN PROGRESS"
-        status_color = (
-            self.colors["success"]
-            if self.current_quest["completed"]
-            else self.colors["warning"]
-        )
+        status_color = self.colors["success"] if self.current_quest["completed"] else self.colors["warning"]
         pyxel.text(panel_x + 5, panel_y + 50, status, status_color)
 
     def draw_weather_ui(self):
@@ -419,16 +395,12 @@ class Game:
 
         # Weather info
         pyxel.text(panel_x + 5, panel_y + 5, "WEATHER", self.colors["text"])
-        pyxel.text(
-            panel_x + 5, panel_y + 20, self.map.weather.upper(), self.colors["text"]
-        )
+        pyxel.text(panel_x + 5, panel_y + 20, self.map.weather.upper(), self.colors["text"])
 
         # Time info
         hour = self.map.time_of_day // 60
         minute = self.map.time_of_day % 60
-        pyxel.text(
-            panel_x + 5, panel_y + 30, f"{hour:02d}:{minute:02d}", self.colors["text"]
-        )
+        pyxel.text(panel_x + 5, panel_y + 30, f"{hour:02d}:{minute:02d}", self.colors["text"])
 
     def draw_event_message(self):
         """Draw event message dialog"""

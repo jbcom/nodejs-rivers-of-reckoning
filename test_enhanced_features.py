@@ -32,9 +32,7 @@ def test_enhanced_features():
         # Test particle system
         particle_system = ParticleSystem()
         particle_system.add_particle(100, 100, 1, -1, 8, 30)
-        print(
-            f"✓ Particle system created with {len(particle_system.particles)} particles"
-        )
+        print(f"✓ Particle system created with {len(particle_system.particles)} particles")
 
         # Test particle system update
         particle_system.update()
@@ -72,9 +70,7 @@ def test_weather_system():
 
         # Test weather types
         weather_types = ["clear", "rain", "fog", "snow"]
-        assert (
-            enhanced_map.weather in weather_types
-        ), f"Invalid weather type: {enhanced_map.weather}"
+        assert enhanced_map.weather in weather_types, f"Invalid weather type: {enhanced_map.weather}"
 
         # Test weather timer
         assert enhanced_map.weather_timer > 0, "Weather timer should be positive"
@@ -133,9 +129,7 @@ def test_quest_system():
         quest_types = set(quest["type"] for quest in quests)
         assert len(quest_types) > 1, "Should generate different quest types"
 
-        print(
-            f"✓ Quest system tests passed - generated {len(quest_types)} different quest types"
-        )
+        print(f"✓ Quest system tests passed - generated {len(quest_types)} different quest types")
         return True
 
     except Exception as e:
@@ -176,16 +170,12 @@ def test_particle_system():
         updated_particle = particle_system.particles[0]
         assert updated_particle["x"] == initial_x + 1, "Particle didn't move in x"
         assert updated_particle["y"] == initial_y - 1, "Particle didn't move in y"
-        assert (
-            updated_particle["lifetime"] == initial_lifetime - 1
-        ), "Particle lifetime didn't decrease"
+        assert updated_particle["lifetime"] == initial_lifetime - 1, "Particle lifetime didn't decrease"
 
         # Test spell effects
         particle_system.create_spell_effect(150, 150, "fireball")
         particle_count_after_spell = len(particle_system.particles)
-        assert (
-            particle_count_after_spell > 2
-        ), "Spell effect should create more particles"
+        assert particle_count_after_spell > 2, "Spell effect should create more particles"
 
         print("✓ Particle system tests passed")
         return True
@@ -267,5 +257,6 @@ def main():
 
 if __name__ == "__main__":
     import sys
+
     success = main()
     sys.exit(0 if success else 1)

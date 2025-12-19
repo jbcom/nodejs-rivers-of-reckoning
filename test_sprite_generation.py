@@ -92,9 +92,7 @@ def main():
     success &= test_game_components()
 
     if success:
-        print(
-            "\n✓ All tests passed! Sprite procedural generation is working correctly."
-        )
+        print("\n✓ All tests passed! Sprite procedural generation is working correctly.")
         return 0
     else:
         print("\n✗ Some tests failed.")
@@ -103,4 +101,5 @@ def main():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())
