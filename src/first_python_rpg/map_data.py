@@ -206,6 +206,13 @@ DIFFICULTY_LEVELS = {
         "enemy_damage_scale": 0.7,
         "confusion": False,
     },
+    "Normal": {
+        "max_health": 10,
+        "overheal_penalty": False,
+        "enemy_health_scale": 1.0,
+        "enemy_damage_scale": 1.0,
+        "confusion": False,
+    },
     "Hard": {
         "max_health": 10,
         "overheal_penalty": True,

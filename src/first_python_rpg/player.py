@@ -65,11 +65,25 @@ class Player:
         self.bosses_defeated = 0
         self.explored = set()
 
-    def move(self, dx, dy, wrap=True):
+    def move(self, dx, dy, wrap=False):
+        """Move the player in the world.
+
+        Args:
+            dx: X direction (-1, 0, or 1)
+            dy: Y direction (-1, 0, or 1)
+            wrap: If True, wrap around map edges (legacy mode)
+        """
         if self.confused > 0 and random.random() < 0.5:
             dx, dy = random.choice([(0, 1), (0, -1), (1, 0), (-1, 0)])
-        self.x = (self.x + dx) % MAP_SIZE
-        self.y = (self.y + dy) % MAP_SIZE
+
+        if wrap:
+            self.x = (self.x + dx) % MAP_SIZE
+            self.y = (self.y + dy) % MAP_SIZE
+        else:
+            # Infinite world - no wrapping
+            self.x = self.x + dx
+            self.y = self.y + dy
+
         if self.confused > 0:
             self.confused -= 1
 

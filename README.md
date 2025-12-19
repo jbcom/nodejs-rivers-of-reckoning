@@ -1,12 +1,14 @@
 # Rivers of Reckoning
 
-A retro-style RPG game built with Python and pygame-ce, featuring procedural generation, modern game mechanics, and web deployment via pygbag.
+A retro-style RPG game built with Python and pygame-ce, featuring **fully procedural world generation** using OpenSimplex noise, ECS architecture, dynamic biomes, and web deployment via pygbag.
 
 ## 🎮 Features
 
+- **Infinite Procedural World**: Explore an endless world generated using OpenSimplex noise with natural-looking terrain and biomes
+- **Dynamic Biomes**: Marsh, Forest, Desert, Tundra, and Grassland - each with unique characteristics
+- **ECS Architecture**: Entity Component System design inspired by modern game engines
+- **Weather & Day/Night System**: Dynamic weather changes and time-of-day progression
 - **Retro Aesthetics**: 960x960 pixel display with classic 16-color palette
-- **Procedural Generation**: Dynamic maps, enemies, and quests
-- **Modern Game Mechanics**: Weather system, particle effects, and quest system
 - **Web Deployment**: Play in browser via pygbag on GitHub Pages
 - **Cross-Platform**: Desktop (Windows, macOS, Linux) and Web
 
@@ -20,7 +22,7 @@ A retro-style RPG game built with Python and pygame-ce, featuring procedural gen
 
 ```bash
 # Using pip
-pip install pygame-ce
+pip install pygame-ce opensimplex esper
 
 # For development (includes testing tools)
 pip install -e ".[dev]"
@@ -52,31 +54,40 @@ pip install pygbag
 python -m pygbag --build build/web .
 ```
 
-## 🎲 Game Features
+## 🌍 Procedural Generation
 
-### Core Gameplay
+The game uses advanced procedural generation techniques inspired by modern game engines:
 
-- **Player Movement**: Arrow keys to move around the map
-- **Feature Selection**: Choose which game features to enable
-- **Random Events**: Treasure, traps, and encounters
-- **Enemy Encounters**: Battle various creatures
-- **Difficulty Levels**: Easy and Hard modes
+### Noise-Based Terrain
 
-### Enhanced Features
+- **OpenSimplex Noise**: Multiple octaves of noise (FBM - Fractal Brownian Motion) for natural terrain
+- **Biome Generation**: Temperature and moisture maps determine biome placement
+- **Deterministic Seeds**: Each seed generates a unique but reproducible world
 
-- **Procedural Dungeons**: Toggle between fixed and procedurally generated maps
-- **Weather System**: Dynamic weather effects
-- **Quest System**: Procedural quest generation with rewards
-- **Particle Effects**: Visual enhancements and effects
+### Biome System
+
+| Biome     | Temperature | Moisture | Characteristics |
+|-----------|-------------|----------|-----------------|
+| Marsh     | Moderate    | High     | Water-heavy, moderate enemies |
+| Forest    | Moderate    | Medium   | Dense trees, medium visibility |
+| Desert    | High        | Low      | Open terrain, high stamina drain |
+| Tundra    | Low         | Any      | Cold, slower movement |
+| Grassland | Moderate    | Low      | Open plains, fast travel |
+
+### ECS Architecture
+
+The game uses the `esper` Entity Component System:
+
+- **Components**: Pure data (Position, Velocity, Health, Combat, etc.)
+- **Processors**: Game logic systems (Movement, AI, Weather, Time, etc.)
+- **Entities**: Composable game objects
 
 ## 🎮 Controls
 
-- **Arrow Keys**: Move player
-- **SPACE**: Toggle features / Select
-- **ENTER**: Start game
+- **Arrow Keys**: Move player through the infinite world
+- **ENTER**: Start game from title screen
 - **ESC**: Pause / Resume / Quit
 - **Q**: Quit to menu (when paused)
-- **W**: Toggle weather display
 
 ### Boss Battles
 
@@ -95,8 +106,10 @@ python -m pygbag --build build/web .
 │       ├── game.py              # Main game class
 │       ├── player.py            # Player logic
 │       ├── enemy.py             # Enemy logic
-│       ├── map.py               # Map system
+│       ├── map.py               # Map system (camera-based viewport)
 │       ├── map_data.py          # Game data and constants
+│       ├── world_gen.py         # Procedural world generation
+│       ├── systems.py           # ECS components and processors
 │       ├── boss.py              # Boss encounters
 │       ├── shop.py              # Shop system
 │       ├── procedural_enemies.py # Procedural enemy generation
@@ -125,11 +138,11 @@ pytest -v
 ### Test Coverage
 
 - ✅ Library structure and imports
-- ✅ Player movement and damage
-- ✅ Map generation and walkability
-- ✅ Procedural vs fixed maps
-- ✅ Feature flag simulation
+- ✅ Player movement (infinite world + legacy wrap modes)
+- ✅ Procedural map generation with different seeds
+- ✅ Biome walkability rules
 - ✅ Game state transitions
+- ✅ Enemy encounters and events
 
 ## 🔧 Development
 
@@ -146,12 +159,12 @@ python -m build
 pip install -e .
 ```
 
-### Architecture
+### Architecture Highlights
 
-- **Engine Abstraction**: Pygame-ce wrapped for easy game development
-- **Async Support**: pygbag-compatible async main loop
-- **Modular Design**: Separated concerns with clear interfaces
-- **Feature Flags**: Toggle game features at runtime
+- **Infinite World**: Camera-based viewport following the player through procedural terrain
+- **Noise Generators**: Instance-based OpenSimplex noise for reproducible worlds
+- **Tile Caching**: Efficient caching of generated tiles for performance
+- **ECS Design**: Clean separation of data (components) and logic (processors)
 
 ## 🌐 Web Deployment
 
@@ -170,6 +183,8 @@ A `render.yaml` blueprint is provided for Render.com static site hosting.
 ### Technology Stack
 
 - **pygame-ce**: Modern fork of pygame for cross-platform 2D games
+- **opensimplex**: Fast noise generation for procedural content
+- **esper**: Lightweight Entity Component System
 - **pygbag**: Python to WebAssembly compiler for browser deployment
 - **Hatch**: Modern Python project management
 
@@ -178,7 +193,15 @@ A `render.yaml` blueprint is provided for Render.com static site hosting.
 - **Resolution**: 960x960 pixel display (scaled from 256x256 logical)
 - **Color Palette**: 16-color retro aesthetic
 - **Performance**: 60 FPS target with async support
-- **Input**: Keyboard with web touch support planned
+- **World Size**: Infinite (procedurally generated on-demand)
+
+### Procedural Generation Techniques
+
+Inspired by advanced game rendering techniques:
+
+- **FBM (Fractal Brownian Motion)**: Layered noise for natural terrain
+- **Biome Classification**: Whittaker-style temperature/moisture mapping
+- **Deterministic Generation**: Same seed = same world
 
 ## 📄 License
 
@@ -188,8 +211,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - **pygame-ce Community**: For maintaining the excellent pygame fork
 - **pygbag**: For enabling Python games in the browser
+- **Otterfall**: Inspiration for ECS architecture and procedural generation
 - **Contributors**: All contributors to the project
 
 ---
 
-**Ready to play?** Run: `python main.py`
+**Ready to explore an infinite world?** Run: `python main.py`

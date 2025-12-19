@@ -2,6 +2,9 @@
 
 This module provides the main Game class that orchestrates the RPG gameplay
 using pygame-ce via the Engine abstraction layer.
+
+The game is fully procedurally generated using OpenSimplex noise for
+natural terrain, biomes, weather, and day/night cycles.
 """
 
 import random
@@ -10,13 +13,19 @@ from .player import Player
 from .enemy import Enemy
 from .map_data import MAP_SIZE, EVENT_TYPES
 from .engine import Engine
+from .systems import create_game_world
+from .world_gen import BIOME_CONFIGS, BiomeType
 
 # Event message display duration (frames at 60 FPS = 3 seconds)
 EVENT_MESSAGE_DURATION = 180
 
 
 class Game:
-    """First Python RPG Game - Pygame-ce Edition"""
+    """Rivers of Reckoning - Fully Procedural RPG
+
+    All terrain, enemies, weather, and events are procedurally generated
+    using noise functions and ECS architecture inspired by Otterfall.
+    """
 
     def __init__(self, test_mode=False):
         # Engine configuration
@@ -25,34 +34,18 @@ class Game:
 
         # Initialize Engine
         if not test_mode:
-            self.engine = Engine(960, 960, "First Python RPG")
+            self.engine = Engine(960, 960, "Rivers of Reckoning")
         else:
             self.engine = None
 
         # Game state
         self.running = True
-        self.state = "feature_select"  # 'feature_select', 'playing', 'paused', 'gameover'
+        self.state = "title"  # 'title', 'playing', 'paused', 'gameover', 'boss'
 
-        # Enhanced features
-        self.features = {
-            "random_events": False,
-            "difficulty_levels": False,
-            "enemy_encounters": False,
-            "procedural_dungeons": False,
-            "dynamic_quests": False,
-            "weather_system": False,
-            "particle_effects": False,
-        }
-        self.selected_feature = 0
-        self.feature_names = [
-            ("Random Events", "random_events"),
-            ("Difficulty Levels", "difficulty_levels"),
-            ("Enemy Encounters", "enemy_encounters"),
-            ("Procedural Dungeons", "procedural_dungeons"),
-            ("Dynamic Quests", "dynamic_quests"),
-            ("Weather System", "weather_system"),
-            ("Particle Effects", "particle_effects"),
-        ]
+        # ECS World for systems
+        self.ecs_world = None
+        self.time_entity = None
+        self.weather_entity = None
 
         # Game objects
         self.player = None
@@ -60,22 +53,23 @@ class Game:
         self.enemies = []
         self.event_message = None
         self.event_timer = 0
-        self.boss_data = None  # For boss battle state
+        self.boss_data = None
 
-        # UI state
-        self.show_quest_ui = False
-        self.show_weather_ui = False
+        # Game statistics
+        self.distance_traveled = 0
+        self.enemies_defeated = 0
+        self.current_biome = BiomeType.MARSH
 
-        # Colors (using 16-color palette mapped in Engine)
+        # Colors (16-color palette)
         self.colors = {
-            "bg": 0,  # Black
-            "text": 7,  # White
-            "player": 8,  # Red
-            "enemy": 10,  # Green
-            "ui": 6,  # Light Blue
+            "bg": 0,        # Black
+            "text": 7,      # White
+            "player": 8,    # Red
+            "enemy": 10,    # Yellow/Green
+            "ui": 6,        # Light Blue
             "highlight": 11,  # Light Green
-            "warning": 8,  # Red
-            "success": 3,  # Green
+            "warning": 8,   # Red
+            "success": 3,   # Dark Green
         }
 
     def update(self):
@@ -83,8 +77,8 @@ class Game:
         if not self.running:
             return
 
-        if self.state == "feature_select":
-            self.update_feature_select()
+        if self.state == "title":
+            self.update_title()
         elif self.state == "playing":
             self.update_playing()
         elif self.state == "paused":
@@ -97,8 +91,8 @@ class Game:
         if self.engine:
             self.engine.cls(self.colors["bg"])
 
-            if self.state == "feature_select":
-                self.draw_feature_select()
+            if self.state == "title":
+                self.draw_title()
             elif self.state == "playing":
                 self.draw_playing()
             elif self.state == "paused":
@@ -106,66 +100,79 @@ class Game:
             elif self.state == "gameover":
                 self.draw_gameover()
 
-    def update_feature_select(self):
-        """Handle feature selection state"""
+    def update_title(self):
+        """Handle title screen state"""
         if not self.engine:
             return
 
-        if self.engine.btnp("up"):
-            self.selected_feature = (self.selected_feature - 1) % len(self.feature_names)
-        elif self.engine.btnp("down"):
-            self.selected_feature = (self.selected_feature + 1) % len(self.feature_names)
-        elif self.engine.btnp("space"):
-            # Toggle selected feature
-            feature_name = self.feature_names[self.selected_feature][1]
-            self.features[feature_name] = not self.features[feature_name]
-        elif self.engine.btnp("enter"):
-            # Start game
+        if self.engine.btnp("enter") or self.engine.btnp("space"):
             self.start_game()
             self.state = "playing"
         elif self.engine.btnp("escape"):
             self.running = False
 
-    def draw_feature_select(self):
-        """Draw enhanced feature selection screen"""
-        self.engine.text(self.WINDOW_WIDTH // 2 - 35, 15, "RPG ENHANCED", self.colors["text"])
-        self.engine.text(self.WINDOW_WIDTH // 2 - 30, 25, "FEATURE SELECT", self.colors["text"])
+    def draw_title(self):
+        """Draw procedural title screen"""
+        if not self.engine:
+            return
 
-        for i, (display_name, feature_name) in enumerate(self.feature_names):
-            y = 45 + i * 15
-            color = self.colors["highlight"] if i == self.selected_feature else self.colors["text"]
-            status = "ON" if self.features[feature_name] else "OFF"
+        # Title
+        self.engine.text(
+            self.WINDOW_WIDTH // 2 - 60, 40,
+            "RIVERS OF RECKONING", self.colors["text"]
+        )
 
-            # Show feature name
-            self.engine.text(10, y, display_name, color)
-            # Show status
-            status_color = self.colors["success"] if self.features[feature_name] else self.colors["warning"]
-            self.engine.text(180, y, status, status_color)
+        # Subtitle
+        self.engine.text(
+            self.WINDOW_WIDTH // 2 - 55, 60,
+            "A Procedural Adventure", self.colors["ui"]
+        )
+
+        # Features list
+        features = [
+            "* Infinite procedural world",
+            "* Dynamic biome system",
+            "* Weather & day/night cycle",
+            "* Adaptive enemy spawning",
+            "* Exploration-based gameplay",
+        ]
+        for i, feature in enumerate(features):
+            self.engine.text(30, 100 + i * 12, feature, self.colors["highlight"])
 
         # Instructions
-        self.engine.text(10, 180, "UP/DOWN: Select", self.colors["ui"])
-        self.engine.text(10, 190, "SPACE: Toggle", self.colors["ui"])
-        self.engine.text(10, 200, "ENTER: Start", self.colors["ui"])
-        self.engine.text(10, 210, "ESC: Quit", self.colors["ui"])
+        self.engine.text(
+            self.WINDOW_WIDTH // 2 - 40, 190,
+            "Press ENTER to begin", self.colors["text"]
+        )
+        self.engine.text(
+            self.WINDOW_WIDTH // 2 - 35, 210,
+            "Press ESC to quit", self.colors["ui"]
+        )
 
     def start_game(self):
-        """Initialize game objects with enhanced features"""
-        difficulty = "Easy"  # Default difficulty
-        if self.features["difficulty_levels"]:
-            difficulty = "Hard"
+        """Initialize fully procedural game world"""
+        # Initialize ECS world with all systems
+        self.ecs_world = create_game_world()
 
-        self.player = Player(difficulty)
+        # Create player
+        self.player = Player("Normal")
 
-        # Create map
+        # Create procedural map with random seed
         from .map import Map
+        seed = random.randint(1, 999999)
+        self.map = Map(seed=seed)
 
-        self.map = Map(procedural=self.features.get("procedural_dungeons", False))
+        # Center camera on player spawn
+        self.map.update_camera(self.player.x, self.player.y)
 
+        # Reset game state
         self.enemies = []
         self.event_message = None
+        self.distance_traveled = 0
+        self.enemies_defeated = 0
 
     def update_playing(self):
-        """Handle playing state with enhanced features"""
+        """Handle playing state with procedural systems"""
         if not self.engine:
             return
 
@@ -173,13 +180,9 @@ class Game:
             self.state = "paused"
             return
 
-        # Toggle quest UI
-        if self.engine.btnp("q"):
-            self.show_quest_ui = not self.show_quest_ui
-
-        # Toggle weather UI
-        if self.engine.btnp("w"):
-            self.show_weather_ui = not self.show_weather_ui
+        # Update ECS systems
+        if self.ecs_world:
+            self.ecs_world.process(1 / 60)
 
         # Handle movement
         dx, dy = 0, 0
@@ -202,46 +205,76 @@ class Game:
                 self.event_message = None
 
     def move_player(self, dx, dy):
-        """Move player and handle enhanced events"""
+        """Move player through procedural world"""
         new_x = self.player.x + dx
         new_y = self.player.y + dy
 
         if self.map.is_walkable(new_x, new_y):
-            self.player.move(dx, dy, wrap=True)
+            self.player.move(dx, dy, wrap=False)
+            self.distance_traveled += 1
 
-            # Trigger random event if enabled
-            if self.features["random_events"] and random.random() < 0.2:
-                event = random.choice(EVENT_TYPES)
-                self.event_message = event["desc"]
-                self.event_timer = EVENT_MESSAGE_DURATION
-                if event["effect"]:
-                    event["effect"](self.player)
-                if self.player.health <= 0:
-                    self.state = "gameover"
+            # Update camera to follow player
+            self.map.update_camera(self.player.x, self.player.y)
 
-            # Trigger enemy encounter if enabled
-            elif self.features["enemy_encounters"] and random.random() < 0.2:
-                enemy = Enemy(strength=random.randint(1, 3))
-                dmg = random.randint(1, enemy.strength)
-                self.player.take_damage(dmg)
+            # Update current biome
+            self.current_biome = self.map.get_current_biome()
 
-                self.event_message = f"Enemy Encounter! Took {dmg} damage from a {enemy.name}."
-                self.event_timer = EVENT_MESSAGE_DURATION
-                if self.player.health <= 0:
-                    self.state = "gameover"
+            # Trigger procedural random events based on biome
+            event_chance = 0.15
+            if random.random() < event_chance:
+                self._trigger_random_event()
+
+            # Trigger enemy encounters based on biome spawn rate
+            spawn_chance = self.map.get_spawn_chance(self.player.x, self.player.y)
+            if random.random() < spawn_chance * 0.3:  # Scale down base rate
+                self._trigger_enemy_encounter()
+
+            if self.player.health <= 0:
+                self.state = "gameover"
+
+    def _trigger_random_event(self):
+        """Trigger a random event based on current biome"""
+        biome_config = BIOME_CONFIGS.get(self.current_biome)
+        if not biome_config:
+            return
+
+        # Biome-specific events
+        event = random.choice(EVENT_TYPES)
+        self.event_message = f"[{biome_config.name}] {event['desc']}"
+        self.event_timer = EVENT_MESSAGE_DURATION
+        if event["effect"]:
+            event["effect"](self.player)
+
+    def _trigger_enemy_encounter(self):
+        """Trigger an enemy encounter based on biome"""
+        biome_config = BIOME_CONFIGS.get(self.current_biome)
+
+        # Scale enemy strength by distance traveled
+        base_strength = 1 + self.distance_traveled // 50
+        strength = random.randint(base_strength, base_strength + 2)
+
+        enemy = Enemy(strength=min(strength, 10))  # Cap at 10
+        dmg = random.randint(1, enemy.strength)
+        self.player.take_damage(dmg)
+
+        biome_name = biome_config.name if biome_config else "Unknown"
+        self.event_message = f"[{biome_name}] {enemy.name} attacks! -{dmg} HP"
+        self.event_timer = EVENT_MESSAGE_DURATION
+        self.enemies_defeated += 1
 
     def draw_playing(self):
-        """Draw playing state with enhanced features"""
+        """Draw playing state with procedural world"""
         if not self.engine:
             return
 
-        # Draw map
+        # Draw procedural map
         self.map.draw(self.engine)
 
-        player_x = self.player.x * (self.WINDOW_WIDTH // MAP_SIZE)
-        player_y = self.player.y * (self.WINDOW_HEIGHT // MAP_SIZE) + 20
+        # Draw player at screen center (camera follows player)
+        center_x = (MAP_SIZE // 2) * (self.WINDOW_WIDTH // MAP_SIZE)
+        center_y = (MAP_SIZE // 2) * (self.WINDOW_HEIGHT // MAP_SIZE) + 20
         tile_size = self.WINDOW_WIDTH // MAP_SIZE
-        self.engine.rect(player_x, player_y, tile_size, tile_size, self.colors["player"])
+        self.engine.rect(center_x, center_y, tile_size, tile_size, self.colors["player"])
 
         # Draw HUD
         self.draw_enhanced_hud()
@@ -251,21 +284,34 @@ class Game:
             self.draw_event_message()
 
     def draw_enhanced_hud(self):
-        """Draw enhanced heads-up display"""
+        """Draw enhanced heads-up display with biome and world info"""
         if not self.engine:
             return
 
-        # Background bar
+        # Top HUD bar
         self.engine.rect(0, 0, self.WINDOW_WIDTH, 20, self.colors["ui"])
 
         # Health
-        self.engine.text(5, 5, f"HP: {self.player.health}", self.colors["text"])
+        self.engine.text(5, 5, f"HP:{self.player.health}", self.colors["text"])
 
         # Gold
-        self.engine.text(60, 5, f"Gold: {self.player.gold}", self.colors["text"])
+        self.engine.text(55, 5, f"G:{self.player.gold}", self.colors["text"])
 
-        # Mana
-        self.engine.text(120, 5, f"Mana: {self.player.mana}", self.colors["text"])
+        # Current biome
+        biome_config = BIOME_CONFIGS.get(self.current_biome)
+        biome_name = biome_config.name if biome_config else "???"
+        self.engine.text(100, 5, biome_name, self.colors["highlight"])
+
+        # Distance traveled
+        self.engine.text(160, 5, f"Dist:{self.distance_traveled}", self.colors["text"])
+
+        # World coordinates at bottom
+        self.engine.rect(0, self.WINDOW_HEIGHT - 12, self.WINDOW_WIDTH, 12, 1)
+        self.engine.text(
+            5, self.WINDOW_HEIGHT - 10,
+            f"World: ({self.player.x}, {self.player.y})",
+            self.colors["text"]
+        )
 
     def draw_event_message(self):
         """Draw event message dialog"""
@@ -308,7 +354,7 @@ class Game:
         if self.engine.btnp("escape"):
             self.state = "playing"
         elif self.engine.btnp("q"):
-            self.state = "feature_select"
+            self.state = "title"
 
     def draw_paused(self):
         """Draw paused state"""
@@ -332,45 +378,46 @@ class Game:
             return
 
         if self.engine.btnp("space"):
-            self.state = "feature_select"
+            self.state = "title"
         elif self.engine.btnp("escape"):
             self.running = False
 
     def draw_gameover(self):
-        """Draw game over state"""
+        """Draw game over state with exploration stats"""
         if not self.engine:
             return
 
         self.engine.text(
             self.WINDOW_WIDTH // 2 - 30,
-            self.WINDOW_HEIGHT // 2 - 30,
+            self.WINDOW_HEIGHT // 2 - 50,
             "GAME OVER",
+            self.colors["warning"],
+        )
+
+        # Show final stats from procedural exploration
+        stats = [
+            f"Distance: {self.distance_traveled}",
+            f"Enemies: {self.enemies_defeated}",
+            f"Gold: {self.player.gold}",
+            f"Score: {self.player.score}",
+        ]
+        for i, stat in enumerate(stats):
+            self.engine.text(
+                self.WINDOW_WIDTH // 2 - 40,
+                self.WINDOW_HEIGHT // 2 - 20 + i * 12,
+                stat,
+                self.colors["ui"],
+            )
+
+        self.engine.text(
+            self.WINDOW_WIDTH // 2 - 50,
+            self.WINDOW_HEIGHT // 2 + 40,
+            "SPACE: New World",
             self.colors["text"],
         )
-
-        # Show final stats
         self.engine.text(
-            self.WINDOW_WIDTH // 2 - 40,
-            self.WINDOW_HEIGHT // 2 - 10,
-            f"Final Gold: {self.player.gold}",
-            self.colors["ui"],
-        )
-        self.engine.text(
-            self.WINDOW_WIDTH // 2 - 40,
-            self.WINDOW_HEIGHT // 2,
-            f"Final Score: {self.player.score}",
-            self.colors["ui"],
-        )
-
-        self.engine.text(
-            self.WINDOW_WIDTH // 2 - 40,
-            self.WINDOW_HEIGHT // 2 + 20,
-            "SPACE: Menu",
-            self.colors["ui"],
-        )
-        self.engine.text(
-            self.WINDOW_WIDTH // 2 - 30,
-            self.WINDOW_HEIGHT // 2 + 30,
+            self.WINDOW_WIDTH // 2 - 35,
+            self.WINDOW_HEIGHT // 2 + 55,
             "ESC: Quit",
             self.colors["ui"],
         )

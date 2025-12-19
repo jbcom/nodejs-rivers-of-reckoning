@@ -62,7 +62,8 @@ def test_game_creation():
     game = Game(test_mode=True)
     print("✓ Game created in test mode")
     assert game is not None
-    assert game.state == "feature_select"
+    # Game now starts at title screen for fully procedural game
+    assert game.state == "title"
 
 
 def main():
