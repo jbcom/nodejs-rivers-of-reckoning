@@ -1,6 +1,5 @@
-# Build and deploy Sphinx documentation to GitHub Pages
-# Synced from jbcom-control-center
-name: Deploy Documentation to Pages
+# Build and deploy Game Manual to GitHub Pages
+name: Deploy Game Manual to Pages
 
 on:
   push:
@@ -21,25 +20,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@38f3f104447c67c051c4a08e39b64a148898af3a # v4
+        uses: astral-sh/setup-uv@afb3baf78d56a259980b76d3fc18fe1e99d867c2 # v7
         with:
           version: "latest"
 
-      - name: Install documentation dependencies
-        run: uv sync --extra docs
-
-      - name: Build documentation
+      - name: Install tox and dependencies
         run: |
-          cd docs
-          uv run sphinx-build -b html . _build/html
+          uv pip install --system tox tox-uv
+
+      - name: Build game manual with tox
+        run: tox -e docs
 
       - name: Add .nojekyll
         run: touch docs/_build/html/.nojekyll
@@ -48,7 +46,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: 'docs/_build/html'
 

@@ -4,6 +4,7 @@ from .player import Player
 from .enemy import Enemy
 from .map_data import MAP_SIZE, EVENT_TYPES
 from .engine import Engine
+
 # Remove Pyxel specific enhancements imports for now or mock them
 # from .pyxel_enhancements import ...
 
@@ -105,16 +106,13 @@ class Game:
 
     def update_feature_select(self):
         """Handle feature selection state"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         if self.engine.btnp("up"):
-            self.selected_feature = (self.selected_feature - 1) % len(
-                self.feature_names
-            )
+            self.selected_feature = (self.selected_feature - 1) % len(self.feature_names)
         elif self.engine.btnp("down"):
-            self.selected_feature = (self.selected_feature + 1) % len(
-                self.feature_names
-            )
+            self.selected_feature = (self.selected_feature + 1) % len(self.feature_names)
         elif self.engine.btnp("space"):
             # Toggle selected feature
             feature_name = self.feature_names[self.selected_feature][1]
@@ -129,27 +127,17 @@ class Game:
     def draw_feature_select(self):
         """Draw enhanced feature selection screen"""
         self.engine.text(self.WINDOW_WIDTH // 2 - 35, 15, "RPG ENHANCED", self.colors["text"])
-        self.engine.text(
-            self.WINDOW_WIDTH // 2 - 30, 25, "FEATURE SELECT", self.colors["text"]
-        )
+        self.engine.text(self.WINDOW_WIDTH // 2 - 30, 25, "FEATURE SELECT", self.colors["text"])
 
         for i, (display_name, feature_name) in enumerate(self.feature_names):
             y = 45 + i * 15
-            color = (
-                self.colors["highlight"]
-                if i == self.selected_feature
-                else self.colors["text"]
-            )
+            color = self.colors["highlight"] if i == self.selected_feature else self.colors["text"]
             status = "ON" if self.features[feature_name] else "OFF"
 
             # Show feature name
             self.engine.text(10, y, display_name, color)
             # Show status
-            status_color = (
-                self.colors["success"]
-                if self.features[feature_name]
-                else self.colors["warning"]
-            )
+            status_color = self.colors["success"] if self.features[feature_name] else self.colors["warning"]
             self.engine.text(180, y, status, status_color)
 
         # Instructions
@@ -168,14 +156,16 @@ class Game:
 
         # Create map
         from .map import Map
-        self.map = Map(procedural=self.features.get("procedural_map", False))
+
+        self.map = Map(procedural=self.features.get("procedural_dungeons", False))
 
         self.enemies = []
         self.event_message = None
 
     def update_playing(self):
         """Handle playing state with enhanced features"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         if self.engine.btnp("escape"):
             self.state = "paused"
@@ -240,7 +230,8 @@ class Game:
 
     def draw_playing(self):
         """Draw playing state with enhanced features"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         # Draw map
         self.map.draw(self.engine)
@@ -259,7 +250,8 @@ class Game:
 
     def draw_enhanced_hud(self):
         """Draw enhanced heads-up display"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         # Background bar
         self.engine.rect(0, 0, self.WINDOW_WIDTH, 20, self.colors["ui"])
@@ -275,7 +267,8 @@ class Game:
 
     def draw_event_message(self):
         """Draw event message dialog"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         # Calculate message box size
         msg_lines = []
@@ -307,7 +300,8 @@ class Game:
 
     def update_paused(self):
         """Handle paused state"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         if self.engine.btnp("escape"):
             self.state = "playing"
@@ -316,7 +310,8 @@ class Game:
 
     def draw_paused(self):
         """Draw paused state"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         # Draw the game state first
         self.draw_playing()
@@ -331,7 +326,8 @@ class Game:
 
     def update_gameover(self):
         """Handle game over state"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         if self.engine.btnp("space"):
             self.state = "feature_select"
@@ -340,7 +336,8 @@ class Game:
 
     def draw_gameover(self):
         """Draw game over state"""
-        if not self.engine: return
+        if not self.engine:
+            return
 
         self.engine.text(
             self.WINDOW_WIDTH // 2 - 30,

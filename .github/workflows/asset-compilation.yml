@@ -1,4 +1,4 @@
-name: Asset Compilation
+name: Asset Validation
 
 on:
   push:
@@ -10,64 +10,46 @@ permissions:
   contents: read
 
 jobs:
-  compile-assets:
+  validate-assets:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
     - name: Set up Python 3.13
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
       with:
         python-version: "3.13"
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libsdl2-dev
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pygame-ce
-    - name: Validate procedural sprites
+        pip install -e .
+
+    - name: Validate game modules
       run: |
         python -c "
-        from src.first_python_rpg.map_data import SPRITES, BOSS_SPRITES
-        print('✓ SPRITES dictionary loaded:', len(SPRITES), 'sprite types')
-        print('✓ BOSS_SPRITES dictionary loaded:', len(BOSS_SPRITES), 'boss types')
-        print('✓ All sprite functions are callable')
-        for name, func in SPRITES.items():
-            if not callable(func):
-                raise ValueError(f'Sprite {name} is not callable')
-        print('✓ Asset compilation validation passed')
+        from first_python_rpg.game import Game
+        from first_python_rpg.player import Player
+        from first_python_rpg.enemy import Enemy
+        from first_python_rpg.map import Map
+        from first_python_rpg.engine import Engine
+        print('✓ All game modules imported successfully')
+        print('✓ Asset validation passed')
         "
-    - name: Test sprite rendering
+
+    - name: Validate map data
       run: |
         python -c "
-        import pyxel
-        import sys
-        sys.path.insert(0, 'src')
-        from first_python_rpg.map_data import SPRITES
-        
-        # Test that sprites can be called without error
-        # (We can't actually render without a display, but we can test function calls)
-        try:
-            # Mock pyxel functions for testing
-            class MockPyxel:
-                def rect(self, *args): pass
-                def circ(self, *args): pass
-                def tri(self, *args): pass
-                def pset(self, *args): pass
-                def line(self, *args): pass
-            
-            import first_python_rpg.map_data
-            first_python_rpg.map_data.pyxel = MockPyxel()
-            
-            # Test each sprite function
-            for name, func in SPRITES.items():
-                func(10, 10, 8, 8)
-                print(f'✓ {name} sprite renders without error')
-            
-            print('✓ All sprite rendering tests passed')
-        except Exception as e:
-            print(f'✗ Sprite rendering test failed: {e}')
-            sys.exit(1)
+        from first_python_rpg.map_data import ENEMY_TYPES, EVENT_TYPES, DIFFICULTY_LEVELS
+        print(f'✓ {len(ENEMY_TYPES)} enemy types loaded')
+        print(f'✓ {len(EVENT_TYPES)} event types loaded')
+        print(f'✓ {len(DIFFICULTY_LEVELS)} difficulty levels loaded')
+        print('✓ Map data validation passed')
         "

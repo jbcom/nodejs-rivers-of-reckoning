@@ -90,8 +90,8 @@ def test_feature_flags_simulation():
     # Simulate toggling feature flags and their effect on logic
     from first_python_rpg.game import Game
 
-    g = Game()
-    g.features["procedural_map"] = True
+    g = Game(test_mode=True)
+    g.features["procedural_dungeons"] = True
     g.features["random_events"] = True
     g.features["difficulty_levels"] = True
     g.features["enemy_encounters"] = True
@@ -115,7 +115,7 @@ def test_feature_flags_simulation():
 
 def test_game_headless_mode_player_movement_and_events():
     g = Game(test_mode=True)
-    g.features["procedural_map"] = True
+    g.features["procedural_dungeons"] = True
     g.features["random_events"] = True
     g.features["difficulty_levels"] = True
     g.features["enemy_encounters"] = True

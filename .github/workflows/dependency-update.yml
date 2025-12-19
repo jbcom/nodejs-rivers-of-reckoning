@@ -10,12 +10,12 @@ jobs:
   check-dependencies:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
     
     - name: Set up Python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
       with:
-        python-version: '3.11'
+        python-version: '3.12'
     
     - name: Install system dependencies
       run: |
@@ -67,7 +67,7 @@ jobs:
     
     - name: Create issue if vulnerabilities found
       if: failure()
-      uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
       with:
         script: |
           const fs = require('fs');
@@ -101,12 +101,12 @@ jobs:
     needs: check-dependencies
     if: always()
     steps:
-    - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
     
     - name: Set up Python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6
       with:
-        python-version: '3.11'
+        python-version: '3.12'
     
     - name: Install system dependencies
       run: |
@@ -118,4 +118,4 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
         pip install -e .
-        tox -e py311
+        tox -e py312

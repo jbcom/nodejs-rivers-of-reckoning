@@ -9,7 +9,7 @@ def test_library_import():
     print("✓ Core library imports successful")
 
     # Test individual module imports
-    from first_python_rpg.map import MapPyxel
+    from first_python_rpg.map import Map
     from first_python_rpg.map_data import MAP_SIZE, ENEMY_TYPES
     from first_python_rpg.procedural_enemies import ProceduralEnemyGenerator
 
@@ -19,7 +19,7 @@ def test_library_import():
     assert Game is not None
     assert Player is not None
     assert Enemy is not None
-    assert MapPyxel is not None
+    assert Map is not None
     assert MAP_SIZE > 0
     assert ENEMY_TYPES is not None
     assert ProceduralEnemyGenerator is not None
@@ -28,7 +28,7 @@ def test_library_import():
 def test_basic_functionality():
     """Test basic game object creation"""
     from first_python_rpg import Player, Enemy
-    from first_python_rpg.map import MapPyxel
+    from first_python_rpg.map import Map
     from first_python_rpg.procedural_enemies import ProceduralEnemyGenerator
 
     # Test object creation
@@ -40,7 +40,7 @@ def test_basic_functionality():
     print(f"✓ Enemy created: {enemy.name}")
     assert enemy.name is not None
 
-    game_map = MapPyxel()
+    game_map = Map()
     print(f"✓ Map created with size {game_map.size}x{game_map.size}")
     assert game_map.size > 0
 

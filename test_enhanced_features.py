@@ -36,7 +36,7 @@ def test_enhanced_features():
 
         # Test particle system update
         particle_system.update()
-        print(f"✓ Particle system updated")
+        print("✓ Particle system updated")
 
         return True
 
@@ -123,7 +123,7 @@ def test_quest_system():
             assert quest["reward"] > 0, "Quest reward should be positive"
 
             # Validate completion status
-            assert quest["completed"] == False, "New quest should not be completed"
+            assert quest["completed"] is False, "New quest should not be completed"
 
         # Check that we get variety in quest types
         quest_types = set(quest["type"] for quest in quests)

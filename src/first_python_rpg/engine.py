@@ -2,6 +2,7 @@ import pygame
 import asyncio
 import sys
 
+
 class Engine:
     def __init__(self, width=960, height=960, title="First Python RPG"):
         pygame.init()
@@ -48,46 +49,61 @@ class Engine:
         # We'll rely on pygame.key.get_pressed() for now as 'btn' and maybe implement 'btnp' later.
         # Mapping Pyxel keys to Pygame keys
         keys = pygame.key.get_pressed()
-        if key == "up": return keys[pygame.K_UP]
-        if key == "down": return keys[pygame.K_DOWN]
-        if key == "left": return keys[pygame.K_LEFT]
-        if key == "right": return keys[pygame.K_RIGHT]
-        if key == "space": return keys[pygame.K_SPACE]
-        if key == "enter": return keys[pygame.K_RETURN]
-        if key == "escape": return keys[pygame.K_ESCAPE]
-        if key == "q": return keys[pygame.K_q]
-        if key == "w": return keys[pygame.K_w]
+        if key == "up":
+            return keys[pygame.K_UP]
+        if key == "down":
+            return keys[pygame.K_DOWN]
+        if key == "left":
+            return keys[pygame.K_LEFT]
+        if key == "right":
+            return keys[pygame.K_RIGHT]
+        if key == "space":
+            return keys[pygame.K_SPACE]
+        if key == "enter":
+            return keys[pygame.K_RETURN]
+        if key == "escape":
+            return keys[pygame.K_ESCAPE]
+        if key == "q":
+            return keys[pygame.K_q]
+        if key == "w":
+            return keys[pygame.K_w]
         return False
 
     def cls(self, color):
         # Color mapping (16 colors)
         colors = {
-            0: (0, 0, 0),       # Black
-            1: (29, 43, 83),    # Dark Blue
-            2: (126, 37, 83),   # Dark Purple
-            3: (0, 135, 81),    # Dark Green
-            4: (171, 82, 54),   # Brown
-            5: (95, 87, 79),    # Dark Gray
-            6: (194, 195, 199), # Light Gray
-            7: (255, 241, 232), # White
-            8: (255, 0, 77),    # Red
-            9: (255, 163, 0),   # Orange
-            10: (255, 236, 39), # Yellow
-            11: (0, 228, 54),   # Green
-            12: (41, 173, 255), # Blue
-            13: (131, 118, 156),# Indigo
-            14: (255, 119, 168),# Pink
-            15: (255, 204, 170),# Peach
+            0: (0, 0, 0),  # Black
+            1: (29, 43, 83),  # Dark Blue
+            2: (126, 37, 83),  # Dark Purple
+            3: (0, 135, 81),  # Dark Green
+            4: (171, 82, 54),  # Brown
+            5: (95, 87, 79),  # Dark Gray
+            6: (194, 195, 199),  # Light Gray
+            7: (255, 241, 232),  # White
+            8: (255, 0, 77),  # Red
+            9: (255, 163, 0),  # Orange
+            10: (255, 236, 39),  # Yellow
+            11: (0, 228, 54),  # Green
+            12: (41, 173, 255),  # Blue
+            13: (131, 118, 156),  # Indigo
+            14: (255, 119, 168),  # Pink
+            15: (255, 204, 170),  # Peach
         }
-        c = colors.get(color, (0,0,0))
+        c = colors.get(color, (0, 0, 0))
         self.screen.fill(c)
 
     def text(self, x, y, s, col):
         font = pygame.font.Font(None, 24)
         colors = {
-            0: (0, 0, 0), 7: (255, 255, 255), 8: (255, 0, 0),
-            10: (255, 255, 0), 11: (0, 255, 0), 6: (200, 200, 200),
-            3: (0, 128, 0), 12: (0, 0, 255), 5: (128, 128, 128)
+            0: (0, 0, 0),
+            7: (255, 255, 255),
+            8: (255, 0, 0),
+            10: (255, 255, 0),
+            11: (0, 255, 0),
+            6: (200, 200, 200),
+            3: (0, 128, 0),
+            12: (0, 0, 255),
+            5: (128, 128, 128),
         }
         c = colors.get(col, (255, 255, 255))
         surface = font.render(s, True, c)
@@ -100,20 +116,29 @@ class Engine:
 
     def rect(self, x, y, w, h, col):
         colors = {
-            0: (0, 0, 0), 1: (29, 43, 83), 2: (126, 37, 83), 3: (0, 135, 81),
-            4: (171, 82, 54), 5: (95, 87, 79), 6: (194, 195, 199), 7: (255, 241, 232),
-            8: (255, 0, 77), 9: (255, 163, 0), 10: (255, 236, 39), 11: (0, 228, 54),
-            12: (41, 173, 255), 13: (131, 118, 156), 14: (255, 119, 168), 15: (255, 204, 170)
+            0: (0, 0, 0),
+            1: (29, 43, 83),
+            2: (126, 37, 83),
+            3: (0, 135, 81),
+            4: (171, 82, 54),
+            5: (95, 87, 79),
+            6: (194, 195, 199),
+            7: (255, 241, 232),
+            8: (255, 0, 77),
+            9: (255, 163, 0),
+            10: (255, 236, 39),
+            11: (0, 228, 54),
+            12: (41, 173, 255),
+            13: (131, 118, 156),
+            14: (255, 119, 168),
+            15: (255, 204, 170),
         }
-        c = colors.get(col, (0,0,0))
+        c = colors.get(col, (0, 0, 0))
         scale = 3.75
         pygame.draw.rect(self.screen, c, (x * scale, y * scale, w * scale, h * scale))
 
     def rectb(self, x, y, w, h, col):
-        colors = {
-            0: (0, 0, 0), 7: (255, 255, 255), 6: (200, 200, 200),
-            8: (255, 0, 0), 3: (0, 255, 0)
-        }
+        colors = {0: (0, 0, 0), 7: (255, 255, 255), 6: (200, 200, 200), 8: (255, 0, 0), 3: (0, 255, 0)}
         c = colors.get(col, (255, 255, 255))
         scale = 3.75
         pygame.draw.rect(self.screen, c, (x * scale, y * scale, w * scale, h * scale), 1)
