@@ -2,7 +2,6 @@
 """CLI entry point for First Python RPG"""
 
 import sys
-import pyxel
 from .game import Game
 
 

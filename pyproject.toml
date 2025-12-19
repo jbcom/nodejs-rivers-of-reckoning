@@ -6,15 +6,18 @@ authors = ["Your Name <you@example.com>"]
 packages = [{include = "first_python_rpg", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pyxel = "^2.4.0"
+python = "^3.10"
+pyxel = "^2.5.10"
+pygbag = "^0.9.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
+pytest = "^9.0.2"
 tox = "^4.0.0"
 tox-gh-actions = "^3.0.0"
 black = "^24.0.0"
-flake8 = "^7.0.0"
+flake8 = "^7.3.0"
+sphinx = "^9.0.4"
+sphinx-rtd-theme = "^3.0.2"
 
 [tool.poetry.scripts]
 first-python-rpg = "first_python_rpg.cli:main"

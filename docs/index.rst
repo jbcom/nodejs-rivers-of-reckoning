@@ -1,31 +1,12 @@
-.. PACKAGE_NAME documentation master file
-   Synced from jbcom-control-center - customize for your project
-
-=======================================
-PACKAGE_NAME Documentation
-=======================================
-
-.. TODO: Add your project description here
+First Python RPG Documentation
+==============================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting Started
+   :caption: Contents:
 
-   getting-started/installation
-   getting-started/quickstart
-
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
-   api/index
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Development
-
-   development/contributing
-
+   user_manual
+   modules
 
 Indices and tables
 ==================

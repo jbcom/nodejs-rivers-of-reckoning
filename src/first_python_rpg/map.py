@@ -15,12 +15,13 @@ TILE_COLORS = {
 
 
 class MapPyxel:
-    def __init__(self):
+    def __init__(self, procedural=False):
         self.size = MAP_SIZE
-        self.grid = self.generate_map()
+        self.procedural = procedural
+        self.grid = self.generate_map(procedural)
         self.tile_size = 256 // MAP_SIZE  # Calculate tile size based on screen size
 
-    def generate_map(self):
+    def generate_map(self, procedural=False):
         """Generate a simple procedural map"""
         grid = []
         tile_types = [".", "~", "#", "^", "o", "T", "R"]

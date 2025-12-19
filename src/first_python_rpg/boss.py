@@ -1,6 +1,5 @@
 import pyxel
 import random
-import time
 from .map_data import BOSS_SPRITES, BOSS_NAMES
 
 

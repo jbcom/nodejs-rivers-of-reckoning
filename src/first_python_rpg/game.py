@@ -2,7 +2,7 @@ import pyxel
 import random
 from .player import Player
 from .enemy import Enemy
-from .map_data import MAP_SIZE, DIFFICULTY_LEVELS, EVENT_TYPES
+from .map_data import MAP_SIZE, EVENT_TYPES
 from .pyxel_enhancements import (
     EnhancedMapPyxel,
     ProceduralDungeonGenerator,
@@ -15,13 +15,14 @@ from .boss import update_boss_battle, draw_boss_battle
 class Game:
     """First Python RPG Game - Enhanced Pyxel version with modern features"""
 
-    def __init__(self):
+    def __init__(self, test_mode=False):
         # Pyxel app configuration
         self.WINDOW_WIDTH = 256
         self.WINDOW_HEIGHT = 256
 
         # Initialize Pyxel
-        pyxel.init(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, title="First Python RPG")
+        if not test_mode:
+            pyxel.init(self.WINDOW_WIDTH, self.WINDOW_HEIGHT, title="First Python RPG")
 
         # Game state
         self.running = True
@@ -187,9 +188,9 @@ class Game:
         if self.features["weather_system"]:
             self.map = EnhancedMapPyxel()
         else:
-            from map_pyxel import MapPyxel
+            from .map import MapPyxel
 
-            self.map = MapPyxel()
+            self.map = MapPyxel(procedural=self.features.get("procedural_map", False))
 
         self.enemies = []
         self.event_message = None
