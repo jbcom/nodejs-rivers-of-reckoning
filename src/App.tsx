@@ -34,9 +34,19 @@ import {
 } from '@jbcom/strata'
 
 // Local components
-import { TitleScreen, GameHUD, PauseMenu, GameOverScreen } from './components'
+import { TitleScreen, GameHUD, PauseMenu, GameOverScreen, Player, EnemySystem, CombatSystem } from './components'
 import { useGameStore } from './store/gameStore'
 import { WeatherType } from './types/game'
+
+// =============================================================================
+// HEIGHT FUNCTION (shared for terrain, player, enemies)
+// =============================================================================
+
+function getTerrainHeight(x: number, z: number): number {
+  const baseHeight = fbm(x * 0.02, 0, z * 0.02, 6) * 8
+  const largeScale = fbm(x * 0.008, 0.1, z * 0.008, 4) * 12
+  return Math.max(0, baseHeight + largeScale)
+}
 
 // =============================================================================
 // THEME
@@ -278,7 +288,27 @@ function GameLoop() {
 // =============================================================================
 
 function Scene() {
-  const { timeOfDay, weather, worldState } = useGameStore()
+  const {
+    timeOfDay,
+    weather,
+    worldState,
+    playerPosition,
+    damagePlayer,
+    addExperience,
+    addGold,
+    incrementEnemiesDefeated,
+  } = useGameStore()
+
+  // Callbacks for enemy system
+  const handleEnemyDefeated = (xp: number, gold: number) => {
+    addExperience(xp)
+    addGold(gold)
+    incrementEnemiesDefeated()
+  }
+
+  const handlePlayerDamage = (damage: number) => {
+    damagePlayer(damage)
+  }
 
   // Calculate sun angle from time of day
   const sunAngle = useMemo(() => {
@@ -341,13 +371,29 @@ function Scene() {
       {/* Vegetation */}
       <Vegetation areaSize={100} />
 
-      {/* Camera controls */}
+      {/* Player character */}
+      <Player heightFunction={getTerrainHeight} />
+
+      {/* Enemy system */}
+      <EnemySystem
+        seed={worldState.seed}
+        playerPosition={playerPosition}
+        heightFunction={getTerrainHeight}
+        onEnemyDefeated={handleEnemyDefeated}
+        onPlayerDamage={handlePlayerDamage}
+      />
+
+      {/* Combat system */}
+      <CombatSystem playerPosition={playerPosition} />
+
+      {/* Camera controls - follows player */}
       <OrbitControls
         enableDamping
         dampingFactor={0.05}
         maxPolarAngle={Math.PI / 2.1}
-        minDistance={10}
-        maxDistance={150}
+        minDistance={5}
+        maxDistance={50}
+        target={[playerPosition.x, playerPosition.y, playerPosition.z]}
       />
 
       {/* Post-processing */}

@@ -55,12 +55,25 @@ src/
 │   ├── TitleScreen.tsx     # Game title and start menu
 │   ├── GameHUD.tsx         # In-game HUD (health, stamina, weather)
 │   ├── PauseMenu.tsx       # Pause overlay
-│   └── GameOverScreen.tsx  # End game stats and restart
+│   ├── GameOverScreen.tsx  # End game stats and restart
+│   ├── Player.tsx          # Player character with WASD movement
+│   ├── Enemy.tsx           # Enemy AI and spawning system
+│   └── Combat.tsx          # Attack mechanics and damage
 ├── store/
 │   └── gameStore.ts        # Zustand state management
 └── types/
     └── game.ts             # TypeScript type definitions
 ```
+
+## 🎮 Controls
+
+| Input | Action |
+|-------|--------|
+| **WASD / Arrow Keys** | Move player |
+| **Space / Left Click** | Attack |
+| **Mouse Drag** | Rotate camera |
+| **Scroll Wheel** | Zoom in/out |
+| **ESC** | Pause game |
 
 ## 🎮 Game Features
 
@@ -73,6 +86,11 @@ src/
 - **Weather**: Clear, rain, fog, snow, storm - affects visibility and gameplay
 - **Day/Night Cycle**: Dawn, day, dusk, night with lighting changes
 - **Time Progression**: Game time flows, affecting NPC behavior and events
+
+### Combat & Enemies
+- **Enemy AI**: Procedurally generated enemies with wandering, chasing, and attacking states
+- **Combat System**: Attack with Space or Click, enemies deal damage on contact
+- **Progression**: Defeat enemies for XP and gold, level up for increased stats
 
 ### Visual Effects
 - **Procedural Sky**: Dynamic atmospheric rendering

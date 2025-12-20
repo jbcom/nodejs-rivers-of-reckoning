@@ -21,6 +21,10 @@ test.describe('Rivers of Reckoning - Strata Edition', () => {
     // Check for feature list
     expect(bodyText).toContain('procedural')
     
+    // Check for controls hint
+    expect(bodyText).toContain('WASD')
+    expect(bodyText).toContain('attack')
+    
     // Screenshot title screen
     await page.screenshot({ path: 'tests/screenshots/title-screen.png' })
   })
@@ -239,6 +243,56 @@ test.describe('Rivers of Reckoning - Strata Edition', () => {
     
     // Should have no critical errors
     expect(criticalErrors).toHaveLength(0)
+  })
+
+  test('player movement with WASD', async ({ page }) => {
+    // Start the game
+    await page.waitForTimeout(500)
+    const startButton = page.getByRole('button', { name: /start/i })
+    await startButton.click()
+    
+    await page.waitForSelector('canvas', { timeout: 10000 })
+    await page.waitForTimeout(1000)
+    
+    // Press W to move forward
+    await page.keyboard.down('w')
+    await page.waitForTimeout(500)
+    await page.keyboard.up('w')
+    
+    // Press A to move left
+    await page.keyboard.down('a')
+    await page.waitForTimeout(500)
+    await page.keyboard.up('a')
+    
+    // Verify game is still running
+    const canvas = page.locator('canvas')
+    await expect(canvas).toBeVisible()
+    
+    // Screenshot after movement
+    await page.screenshot({ path: 'tests/screenshots/player-movement.png' })
+  })
+
+  test('combat system - attack with space', async ({ page }) => {
+    // Start the game
+    await page.waitForTimeout(500)
+    const startButton = page.getByRole('button', { name: /start/i })
+    await startButton.click()
+    
+    await page.waitForSelector('canvas', { timeout: 10000 })
+    await page.waitForTimeout(1000)
+    
+    // Press Space to attack
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(200)
+    
+    // Verify game is still running
+    const canvas = page.locator('canvas')
+    await expect(canvas).toBeVisible()
+    
+    // Screenshot after attack
+    await page.screenshot({ path: 'tests/screenshots/combat-attack.png' })
   })
 
   test('game comparison screenshot', async ({ page }) => {

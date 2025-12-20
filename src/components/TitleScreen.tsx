@@ -114,7 +114,7 @@ export function TitleScreen() {
           variant="body2"
           sx={{ mt: 4, opacity: 0.6 }}
         >
-          WASD to move • Mouse to look • ESC to pause
+          WASD/Arrows to move • Space/Click to attack • ESC to pause
         </Typography>
       </Container>
     </div>
