@@ -16,7 +16,6 @@ import {
 import { useGameStore } from '../store/gameStore'
 import { BIOME_CONFIGS, WeatherType } from '../types/game'
 import { useEffect, useState, useRef } from 'react'
-import * as THREE from 'three'
 import { audioManager } from '../utils/audioManager'
 
 const WeatherIcon = ({ weather }: { weather: WeatherType }) => {

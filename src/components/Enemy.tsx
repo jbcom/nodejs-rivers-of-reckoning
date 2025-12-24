@@ -3,7 +3,7 @@
  * Ported from Python enemy.py and procedural_enemies.py
  */
 
-import { useRef, useEffect, useState, useMemo } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useTexture } from '@react-three/drei'
 import * as THREE from 'three'
@@ -95,10 +95,10 @@ export function EnemySystem({
   const healthBarRefs = useRef<Map<number, THREE.Mesh>>(new Map())
   const lastAttackRef = useRef<Map<number, number>>(new Map())
 
-  // Load enemy texture
-  const enemyTexture = useTexture('/assets/images/enemy.png')
-  enemyTexture.magFilter = THREE.NearestFilter
-  enemyTexture.minFilter = THREE.NearestFilter
+  // Load enemy texture with pixel-art settings
+  const enemyTexture = useTexture('/assets/images/enemy.png', (tex) => {
+    tex.magFilter = tex.minFilter = THREE.NearestFilter
+  })
 
   // Keep ref in sync with state for AI loop
   useEffect(() => {

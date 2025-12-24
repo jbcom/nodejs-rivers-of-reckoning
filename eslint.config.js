@@ -42,6 +42,7 @@ export default tseslint.config(
           'shadow-camera-top', 'shadow-camera-bottom', 'shadow-bias', 'shadow-radius',
           'fov', 'near', 'far', 'aspect',
           'object', 'dispose', 'frustumCulled', 'visible', 'renderOrder',
+          'map', 'alphaTest',
         ]
       }],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],

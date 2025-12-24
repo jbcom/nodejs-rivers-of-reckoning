@@ -48,8 +48,8 @@ export function Player({ heightFunction }: PlayerProps) {
     const handleKeyUp = (e: KeyboardEvent) => {
       keysRef.current.delete(e.key.toLowerCase())
     }
-    const handleJoystickMove = (e: any) => {
-      joystickRef.current = e.detail
+    const handleJoystickMove = (e: Event) => {
+      joystickRef.current = (e as CustomEvent).detail
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -64,7 +64,7 @@ export function Player({ heightFunction }: PlayerProps) {
   }, [])
 
   // Movement and physics
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!meshRef.current || !spriteRef.current) return
 
     const keys = keysRef.current
@@ -97,14 +97,22 @@ export function Player({ heightFunction }: PlayerProps) {
     if (isMoving) {
       animationTimerRef.current += delta * 10
       animationFrameRef.current = Math.floor(animationTimerRef.current) % 4
-      spriteTexture.offset.x = animationFrameRef.current / 4
+      
+      const offset = animationFrameRef.current / 4
+      if (spriteRef.current) {
+        const material = spriteRef.current.material as THREE.SpriteMaterial
+        if (material.map) material.map.offset.x = offset
+      }
 
       // Play move sound occasionally
       if (Math.floor(animationTimerRef.current * 2) % 4 === 0 && animationFrameRef.current !== 0) {
         audioManager.playMove()
       }
     } else {
-      spriteTexture.offset.x = 0 // Standing frame
+      if (spriteRef.current) {
+        const material = spriteRef.current.material as THREE.SpriteMaterial
+        if (material.map) material.map.offset.x = 0
+      }
       animationTimerRef.current = 0
     }
 

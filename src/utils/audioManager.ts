@@ -7,7 +7,6 @@ class AudioManager {
   private ctx: AudioContext | null = null
   private musicBuffer: AudioBuffer | null = null
   private musicSource: AudioBufferSourceNode | null = null
-  private isEnabled: boolean = false
 
   constructor() {
     // Audio context is initialized on first user interaction
@@ -15,8 +14,9 @@ class AudioManager {
 
   private init() {
     if (this.ctx) return
-    this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
-    this.isEnabled = true
+    // Support for legacy webkitAudioContext
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    this.ctx = new AudioContextClass()
   }
 
   // Synthesize a simple retro sound
