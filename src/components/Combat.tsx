@@ -9,6 +9,7 @@ import * as THREE from 'three'
 import { useGameStore } from '../store/gameStore'
 import { PLAYER } from '../constants/game'
 import { combatEvents } from '../events/combatEvents'
+import { audioManager } from '../utils/audioManager'
 
 interface DamageIndicator {
   id: number
@@ -55,6 +56,9 @@ export function CombatSystem({ playerPosition }: CombatSystemProps) {
   const performAttack = useCallback(() => {
     setIsAttacking(true)
     const damage = getAttackDamage()
+    
+    // Play sound
+    audioManager.playDamage()
 
     // Emit attack event - enemy system will check for hits
     combatEvents.emitPlayerAttack(

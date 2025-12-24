@@ -32,6 +32,7 @@ import {
   // Post-processing
   CinematicEffects,
 } from '@jbcom/strata'
+import { useTexture } from '@react-three/drei'
 
 // Local components
 import { TitleScreen, GameHUD, PauseMenu, GameOverScreen, Player, EnemySystem, CombatSystem } from './components'
@@ -156,6 +157,14 @@ function ProceduralTerrain({ size, segments, seed }: ProceduralTerrainProps) {
 // =============================================================================
 
 function Vegetation({ areaSize }: { areaSize: number }) {
+  // Load textures
+  const grassTexture = useTexture('/assets/images/grass.png')
+  const treeTexture = useTexture('/assets/images/tree.png')
+  
+  // Configure textures
+  grassTexture.magFilter = grassTexture.minFilter = THREE.NearestFilter
+  treeTexture.magFilter = treeTexture.minFilter = THREE.NearestFilter
+
   // Height function for placing vegetation
   const heightFunc = useCallback(
     (x: number, z: number) => {
@@ -175,11 +184,13 @@ function Vegetation({ areaSize }: { areaSize: number }) {
         heightFunc={heightFunc}
         height={0.3}
         color="#4a7a4a"
+        map={grassTexture}
       />
       <TreeInstances
         count={150}
         areaSize={areaSize}
         heightFunc={heightFunc}
+        map={treeTexture}
       />
       <RockInstances
         count={80}

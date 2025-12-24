@@ -5,19 +5,15 @@
 import { Typography, Button, Container, List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { PlayArrow, Star } from '@mui/icons-material'
 import { useGameStore } from '../store/gameStore'
+import { audioManager } from '../utils/audioManager'
 
 export function TitleScreen() {
   const { startGame } = useGameStore()
 
-  const handleStart = () => {
+  const handleStart = async () => {
     // Resume audio context for browser autoplay restrictions
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    if (AudioContextClass) {
-      const audioCtx = new AudioContextClass()
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume()
-      }
-    }
+    await audioManager.resume()
+    audioManager.playClick()
     startGame()
   }
 

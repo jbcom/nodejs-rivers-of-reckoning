@@ -5,9 +5,13 @@
 
 import { useRef, useEffect, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
+import { useTexture } from '@react-three/drei'
+import * as THREE from 'this-is-not-three-but-three-is-fine'
+import * as THREE_REAL from 'three'
 import { ENEMY, PLAYER } from '../constants/game'
 import { combatEvents } from '../events/combatEvents'
+
+const THREE = THREE_REAL
 
 // Enemy types with different stats (matches GAME_IDENTITY.md)
 const ENEMY_TYPES = [
@@ -92,7 +96,13 @@ export function EnemySystem({
   const enemiesRef = useRef<EnemyData[]>(enemies)
   const meshRefs = useRef<Map<number, THREE.Mesh>>(new Map())
   const healthBarRefs = useRef<Map<number, THREE.Mesh>>(new Map())
+  const healthBarBgRefs = useRef<Map<number, THREE.Mesh>>(new Map())
   const lastAttackRef = useRef<Map<number, number>>(new Map())
+
+  // Load enemy texture
+  const enemyTexture = useTexture('/assets/images/enemy.png')
+  enemyTexture.magFilter = THREE.NearestFilter
+  enemyTexture.minFilter = THREE.NearestFilter
 
   // Keep ref in sync with state for AI loop
   useEffect(() => {
@@ -140,6 +150,7 @@ export function EnemySystem({
 
       const mesh = meshRefs.current.get(enemy.id)
       const healthBar = healthBarRefs.current.get(enemy.id)
+      const healthBarBg = healthBarBgRefs.current.get(enemy.id)
       if (!mesh) return
 
       const distToPlayer = enemy.position.distanceTo(playerPos)
@@ -211,6 +222,10 @@ export function EnemySystem({
         const healthPercent = Math.max(0, enemy.health / enemy.maxHealth)
         healthBar.scale.x = healthPercent
       }
+
+      if (healthBarBg) {
+        healthBarBg.position.set(enemy.position.x, enemy.position.y + 0.8, enemy.position.z)
+      }
     })
   })
 
@@ -221,24 +236,36 @@ export function EnemySystem({
 
         return (
           <group key={enemy.id}>
-            {/* Enemy body */}
-            <mesh
+            {/* Enemy Sprite */}
+            <sprite
               ref={(ref) => {
-                if (ref) meshRefs.current.set(enemy.id, ref)
+                if (ref) meshRefs.current.set(enemy.id, ref as any)
                 else meshRefs.current.delete(enemy.id)
               }}
               position={enemy.position}
-              castShadow
+              scale={[1, 1, 1]}
             >
-              <sphereGeometry args={[0.4, 16, 16]} />
-              <meshStandardMaterial
+              <spriteMaterial
+                map={enemyTexture}
                 color={enemy.type.color}
-                roughness={0.6}
-                metalness={0.2}
+                transparent
+                alphaTest={0.5}
               />
+            </sprite>
+
+            {/* Health bar background */}
+            <mesh
+              ref={(ref) => {
+                if (ref) healthBarBgRefs.current.set(enemy.id, ref)
+                else healthBarBgRefs.current.delete(enemy.id)
+              }}
+              position={[enemy.position.x, enemy.position.y + 0.8, enemy.position.z]}
+            >
+              <planeGeometry args={[0.82, 0.12]} />
+              <meshBasicMaterial color="#000000" />
             </mesh>
 
-            {/* Health bar */}
+            {/* Health bar foreground */}
             <mesh
               ref={(ref) => {
                 if (ref) healthBarRefs.current.set(enemy.id, ref)
