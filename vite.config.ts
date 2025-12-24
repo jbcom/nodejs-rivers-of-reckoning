@@ -14,6 +14,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    exclude: ['node_modules', 'dist', '.git', '.cache', 'tests/**'],
     deps: {
       inline: [/@jbcom\/strata/],
     },
