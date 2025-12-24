@@ -18,7 +18,7 @@ export function Player({ heightFunction }: PlayerProps) {
   const velocityRef = useRef(new THREE.Vector3())
   const keysRef = useRef<Set<string>>(new Set())
 
-  const { playerPosition, movePlayer, playerHealth } = useGameStore()
+  const { playerPosition, movePlayer, playerHealth, joystickValue } = useGameStore()
 
   // Keyboard input handling
   useEffect(() => {
@@ -54,11 +54,15 @@ export function Player({ heightFunction }: PlayerProps) {
     if (keys.has('a') || keys.has('arrowleft')) moveX -= 1
     if (keys.has('d') || keys.has('arrowright')) moveX += 1
 
-    // Normalize diagonal movement
-    if (moveX !== 0 && moveZ !== 0) {
-      const len = Math.sqrt(moveX * moveX + moveZ * moveZ)
-      moveX /= len
-      moveZ /= len
+    // Virtual Joystick movement
+    moveX += joystickValue.x
+    moveZ += joystickValue.y
+
+    // Normalize diagonal movement and clamp to max 1.0
+    const magnitude = Math.sqrt(moveX * moveX + moveZ * moveZ)
+    if (magnitude > 1) {
+      moveX /= magnitude
+      moveZ /= magnitude
     }
 
     // Apply movement

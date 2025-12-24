@@ -16,6 +16,7 @@ import {
 import { useGameStore } from '../store/gameStore'
 import { BIOME_CONFIGS, WeatherType } from '../types/game'
 import { useEffect } from 'react'
+import { VirtualJoystick } from './VirtualJoystick'
 
 const WeatherIcon = ({ weather }: { weather: WeatherType }) => {
   switch (weather) {
@@ -44,6 +45,9 @@ export function GameHUD() {
     weather,
     worldState,
     pauseGame,
+    gameState,
+    setJoystickValue,
+    setLookJoystickValue,
   } = useGameStore()
 
   const biomeConfig = BIOME_CONFIGS[worldState.currentBiome]
@@ -197,6 +201,22 @@ export function GameHUD() {
           🏃 {Math.floor(worldState.distanceTraveled)}m
         </Typography>
       </div>
+
+      {/* Virtual Joysticks for Mobile */}
+      {gameState === 'playing' && (
+        <>
+          <VirtualJoystick
+            position={{ bottom: 60, left: 60 }}
+            onMove={(x, y) => setJoystickValue(x, y)}
+          />
+
+          <VirtualJoystick
+            position={{ bottom: 60, right: 60 }}
+            onMove={(x, y) => setLookJoystickValue(x, y)}
+            color="rgba(255, 200, 0, 0.1)"
+          />
+        </>
+      )}
     </>
   )
 }

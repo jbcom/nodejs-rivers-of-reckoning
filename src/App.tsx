@@ -297,7 +297,21 @@ function Scene() {
     addExperience,
     addGold,
     incrementEnemiesDefeated,
+    lookJoystickValue,
   } = useGameStore()
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const orbitControlsRef = useRef<any>(null)
+
+  useFrame((_, delta) => {
+    if (orbitControlsRef.current && (lookJoystickValue.x !== 0 || lookJoystickValue.y !== 0)) {
+      // Rotate camera based on look joystick
+      const rotateSpeed = 2.0
+      orbitControlsRef.current.rotateLeft(-lookJoystickValue.x * rotateSpeed * delta)
+      orbitControlsRef.current.rotateUp(lookJoystickValue.y * rotateSpeed * delta)
+      orbitControlsRef.current.update()
+    }
+  })
 
   // Callbacks for enemy system
   const handleEnemyDefeated = (xp: number, gold: number) => {
@@ -388,6 +402,7 @@ function Scene() {
 
       {/* Camera controls - follows player */}
       <OrbitControls
+        ref={orbitControlsRef}
         enableDamping
         dampingFactor={0.05}
         maxPolarAngle={Math.PI / 2.1}
@@ -429,7 +444,7 @@ export default function App() {
       
       {/* Main Game */}
       {(gameState === 'playing' || gameState === 'paused') && (
-        <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+        <div style={{ width: '100vw', height: '100vh', position: 'relative', touchAction: 'none' }}>
           {/* HUD Overlay */}
           <GameHUD />
           
