@@ -275,7 +275,7 @@ function WeatherEffects({ weather, intensity }: { weather: WeatherType; intensit
 // =============================================================================
 
 function GameLoop() {
-  const { updateTime, updateWeather, playerStats, addQuest, activeQuests, settings } = useGameStore()
+  const { updateTime, updateWeather, playerStats, addQuest, activeQuests, settings, worldState } = useGameStore()
   const { triggerRandomEvent } = useRandomEvents()
   const { checkQuests, generateQuest } = useQuestSystem()
   const lastEventCheck = useRef(0)
@@ -287,7 +287,8 @@ function GameLoop() {
 
     // Check for random events every 10 seconds
     if (settings.features.randomEvents && state.clock.elapsedTime - lastEventCheck.current > 10) {
-      triggerRandomEvent()
+      const eventSeed = worldState.seed + Math.floor(state.clock.elapsedTime / 10)
+      triggerRandomEvent(eventSeed)
       lastEventCheck.current = state.clock.elapsedTime
     }
 
@@ -297,7 +298,8 @@ function GameLoop() {
       
       // If no active quests, generate one
       if (activeQuests.length === 0) {
-        addQuest(generateQuest(playerStats.level))
+        const questSeed = worldState.seed + Math.floor(state.clock.elapsedTime / 2)
+        addQuest(generateQuest(playerStats.level, questSeed))
       }
       
       lastQuestCheck.current = state.clock.elapsedTime

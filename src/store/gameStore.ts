@@ -70,6 +70,7 @@ interface GameStore {
   resumeGame: () => void
   endGame: () => void
   resetGame: () => void
+  loadGame: () => void
 }
 
 const getTimePhase = (hour: number): TimePhase => {
@@ -505,6 +506,25 @@ export const useGameStore = create<GameStore>()(
     resumeGame: () => set({ gameState: 'playing' }),
     endGame: () => set({ gameState: 'gameover' }),
     resetGame: () => set({ gameState: 'title' }),
+    loadGame: () => {
+      const saved = localStorage.getItem('rivers-of-reckoning-save')
+      if (saved) {
+        try {
+          // The persist middleware stores data in a 'state' property
+          const parsed = JSON.parse(saved)
+          const data = parsed.state
+          if (data) {
+            set({
+              ...data,
+              gameState: 'playing',
+            })
+          }
+        } catch (error) {
+          console.error('Failed to load save:', error)
+          localStorage.removeItem('rivers-of-reckoning-save')
+        }
+      }
+    },
   }),
   {
     name: 'rivers-of-reckoning-save',

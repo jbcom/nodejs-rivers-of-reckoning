@@ -10,10 +10,17 @@ import { Quest, QuestType } from '../types/game'
 export function useQuestSystem() {
   const { activeQuests, completeQuest } = useGameStore()
 
-  const generateQuest = (level: number): Quest => {
+  const generateQuest = (level: number, seed: number): Quest => {
     const types = [QuestType.DEFEAT_ENEMIES, QuestType.TRAVEL_DISTANCE, QuestType.COLLECT_GOLD]
-    const type = types[Math.floor(Math.random() * types.length)]
-    const id = `quest_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+    
+    // Simple deterministic PRNG from seed
+    const seededRandom = (s: number) => {
+      const x = Math.sin(s) * 10000
+      return x - Math.floor(x)
+    }
+
+    const type = types[Math.floor(seededRandom(seed) * types.length)]
+    const id = `quest_${seed}_${level}_${type}`
     
     let description = ''
     let targetAmount = 0

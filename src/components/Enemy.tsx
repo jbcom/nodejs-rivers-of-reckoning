@@ -127,9 +127,11 @@ export function EnemySystem({
   // Spawn boss after 10 enemies defeated
   useEffect(() => {
     if (worldState.enemiesDefeated > 0 && worldState.enemiesDefeated % 10 === 0) {
-      // Defer to avoid cascading renders warning
-      const timer = setTimeout(() => spawnBoss(), 0)
-      return () => clearTimeout(timer)
+      // Defer to avoid cascading renders warning using Promise.resolve().then()
+      // as suggested by review feedback to avoid race conditions
+      Promise.resolve().then(() => {
+        spawnBoss()
+      })
     }
   }, [worldState.enemiesDefeated, spawnBoss])
   

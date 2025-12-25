@@ -2,12 +2,14 @@
  * Title Screen - Ported from game.py draw_title()
  */
 
-import { Typography, Button, Container, List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
-import { PlayArrow, Star } from '@mui/icons-material'
+import { Typography, Button, Container, List, ListItem, ListItemIcon, ListItemText, Stack } from '@mui/material'
+import { PlayArrow, Star, History, Settings } from '@mui/icons-material'
 import { useGameStore } from '../store/gameStore'
+import { DifficultyLevel } from '../types/game'
 
 export function TitleScreen() {
-  const { startGame } = useGameStore()
+  const { startGame, loadGame, worldState, setDifficultyLevel } = useGameStore()
+  const hasSave = localStorage.getItem('rivers-of-reckoning-save') !== null
 
   const handleStart = () => {
     // Resume audio context for browser autoplay restrictions
@@ -19,6 +21,25 @@ export function TitleScreen() {
       }
     }
     startGame()
+  }
+
+  const handleLoad = () => {
+    // Resume audio context
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (AudioContextClass) {
+      const audioCtx = new AudioContextClass()
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume()
+      }
+    }
+    loadGame()
+  }
+
+  const handleDifficultyChange = () => {
+    const levels = Object.values(DifficultyLevel)
+    const currentIndex = levels.indexOf(worldState.difficultyLevel)
+    const nextIndex = (currentIndex + 1) % levels.length
+    setDifficultyLevel(levels[nextIndex])
   }
 
   // Core features from GAME_IDENTITY.md design pillars
@@ -100,27 +121,64 @@ export function TitleScreen() {
           ))}
         </List>
 
-        {/* Start Button */}
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<PlayArrow />}
-          onClick={handleStart}
-          sx={{
-            px: 6,
-            py: 2,
-            fontSize: '1.2rem',
-            fontFamily: '"Press Start 2P", monospace',
-            background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
-            boxShadow: '0 0 20px rgba(76, 175, 80, 0.5)',
-            '&:hover': {
-              background: 'linear-gradient(45deg, #66BB6A 30%, #9CCC65 90%)',
-              boxShadow: '0 0 30px rgba(76, 175, 80, 0.8)',
-            },
-          }}
-        >
-          START GAME
-        </Button>
+        {/* Action Buttons */}
+        <Stack spacing={2} sx={{ mt: 4, maxWidth: 300, mx: 'auto' }}>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<PlayArrow />}
+            onClick={handleStart}
+            sx={{
+              py: 2,
+              fontSize: '1.2rem',
+              fontFamily: '"Press Start 2P", monospace',
+              background: 'linear-gradient(45deg, #4CAF50 30%, #8BC34A 90%)',
+              boxShadow: '0 0 20px rgba(76, 175, 80, 0.5)',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #66BB6A 30%, #9CCC65 90%)',
+                boxShadow: '0 0 30px rgba(76, 175, 80, 0.8)',
+              },
+            }}
+          >
+            START GAME
+          </Button>
+
+          {hasSave && (
+            <Button
+              variant="outlined"
+              size="large"
+              startIcon={<History />}
+              onClick={handleLoad}
+              sx={{
+                py: 1.5,
+                fontSize: '1rem',
+                fontFamily: '"Press Start 2P", monospace',
+                color: '#2196F3',
+                borderColor: '#2196F3',
+                '&:hover': {
+                  borderColor: '#42A5F5',
+                  background: 'rgba(33, 150, 243, 0.1)',
+                },
+              }}
+            >
+              CONTINUE
+            </Button>
+          )}
+
+          <Button
+            variant="text"
+            size="small"
+            startIcon={<Settings />}
+            onClick={handleDifficultyChange}
+            sx={{
+              color: 'rgba(255, 255, 255, 0.7)',
+              fontFamily: 'Roboto Mono',
+              fontSize: '0.8rem',
+            }}
+          >
+            Difficulty: {worldState.difficultyLevel.toUpperCase()}
+          </Button>
+        </Stack>
 
         {/* Controls hint */}
         <Typography

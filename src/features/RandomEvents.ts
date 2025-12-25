@@ -44,14 +44,29 @@ export const RANDOM_EVENTS: RandomEvent[] = [
     action: (store: GameStoreType) => {
       store.changeWeather()
     }
+  },
+  {
+    id: 'bandit_ambush',
+    name: 'Bandit Ambush',
+    description: 'Bandits stole some of your gold!',
+    chance: 0.02,
+    action: (store: GameStoreType) => {
+      const currentGold = store.playerStats.gold
+      const loss = Math.min(currentGold, 20 + Math.floor(Math.random() * 30))
+      store.addGold(-loss)
+    }
   }
 ]
 
 export function useRandomEvents() {
   const store = useGameStore()
   
-  const triggerRandomEvent = () => {
-    const roll = Math.random()
+  const triggerRandomEvent = (seed?: number) => {
+    const roll = seed !== undefined ? (() => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    })() : Math.random()
+    
     let cumulativeChance = 0
     
     for (const event of RANDOM_EVENTS) {
