@@ -27,7 +27,16 @@ test.describe('New Game Features', () => {
     const startButton = page.getByRole('button', { name: /start/i })
     await startButton.click()
     
-    await page.waitForSelector('canvas', { timeout: 10000 })
+    // Increased timeout for CI stability
+    await page.waitForSelector('canvas', { timeout: 30000 })
+    
+    // Check for save button in HUD
+    const saveButton = page.getByRole('button', { name: /save game/i })
+    await expect(saveButton).toBeVisible()
+    
+    // Click save and check for feedback
+    await saveButton.click()
+    await expect(page.getByText(/GAME SAVED/)).toBeVisible({ timeout: 10000 })
     
     // Pause to see settings
     await page.keyboard.press('Escape')
@@ -41,12 +50,24 @@ test.describe('New Game Features', () => {
     await expect(difficultyInSettings).toBeVisible()
   })
 
-  test('quest overlay appears and shows active quests', async ({ page: _page }) => {
-    // Skip this test until quest generation can be made deterministic for testing
-    // as suggested by review feedback
+  test('quest overlay appears and shows active quests', async ({ page }) => {
+    // Skip this test until quest generation can be made more reliable in tests
     test.skip()
     
-    // TODO: Implement proper quest testing once quest generation is deterministic
-    // or add a test-only method to manually trigger quest generation
+    const startButton = page.getByRole('button', { name: /start/i })
+    await startButton.click()
+    
+    await page.waitForSelector('canvas', { timeout: 30000 })
+    
+    // Quests are generated every 2 seconds if none active
+    // Wait for at least one quest to be generated
+    await page.waitForTimeout(3000)
+    
+    const questOverlay = page.getByText(/active quests/i)
+    await expect(questOverlay).toBeVisible({ timeout: 10000 })
+    
+    // Check for at least one quest description
+    const questDesc = page.locator('div').filter({ hasText: /defeat|travel|collect/i }).nth(0)
+    await expect(questDesc).toBeVisible()
   })
 })

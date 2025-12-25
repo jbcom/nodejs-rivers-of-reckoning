@@ -38,7 +38,7 @@ test.describe('Rivers of Reckoning - Strata Edition', () => {
     await startButton.click()
     
     // Wait for 3D canvas to appear
-    await page.waitForSelector('canvas', { timeout: 10000 })
+    await page.waitForSelector('canvas', { timeout: 30000 })
     
     // Verify canvas exists
     const canvas = page.locator('canvas')

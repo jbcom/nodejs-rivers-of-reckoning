@@ -71,6 +71,7 @@ interface GameStore {
   endGame: () => void
   resetGame: () => void
   loadGame: () => void
+  saveGame: () => void
 }
 
 const getTimePhase = (hour: number): TimePhase => {
@@ -525,6 +526,24 @@ export const useGameStore = create<GameStore>()(
         }
       }
     },
+    saveGame: () => {
+      // persist middleware handles the actual saving to localStorage
+      // Force persist to sync immediately
+      const state = get()
+      localStorage.setItem('rivers-of-reckoning-save', JSON.stringify({
+        state: {
+          playerPosition: state.playerPosition,
+          playerHealth: state.playerHealth,
+          playerStamina: state.playerStamina,
+          playerStats: state.playerStats,
+          timeOfDay: state.timeOfDay,
+          weather: state.weather,
+          worldState: state.worldState,
+          activeQuests: state.activeQuests,
+        },
+        version: 0
+      }))
+    },
   }),
   {
     name: 'rivers-of-reckoning-save',
@@ -533,11 +552,12 @@ export const useGameStore = create<GameStore>()(
       playerHealth: state.playerHealth,
       playerStamina: state.playerStamina,
       playerStats: state.playerStats,
-          timeOfDay: state.timeOfDay,
-          weather: state.weather,
-          worldState: state.worldState,
-          activeQuests: state.activeQuests,
-        }),
-      }
+      timeOfDay: state.timeOfDay,
+      weather: state.weather,
+      worldState: state.worldState,
+      activeQuests: state.activeQuests,
+    }),
+  }
 )
-))
+)
+)

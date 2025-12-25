@@ -12,10 +12,12 @@ import {
   Thunderstorm,
   AcUnit,
   FilterDrama,
+  Assignment,
+  Save as SaveIcon,
 } from '@mui/icons-material'
 import { useGameStore } from '../store/gameStore'
 import { BIOME_CONFIGS, WeatherType } from '../types/game'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const WeatherIcon = ({ weather }: { weather: WeatherType }) => {
   switch (weather) {
@@ -44,7 +46,11 @@ export function GameHUD() {
     weather,
     worldState,
     pauseGame,
+    activeQuests,
+    saveGame,
   } = useGameStore()
+
+  const [saveFeedback, setSaveFeedback] = useState(false)
 
   const biomeConfig = BIOME_CONFIGS[worldState.currentBiome]
   const healthPercent = (playerHealth.current / playerHealth.maximum) * 100
@@ -61,8 +67,95 @@ export function GameHUD() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [pauseGame])
 
+  const handleSave = () => {
+    saveGame()
+    setSaveFeedback(true)
+    setTimeout(() => setSaveFeedback(false), 2000)
+  }
+
   return (
     <>
+      {/* Quest Overlay */}
+      {activeQuests.length > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '80px',
+            right: '16px',
+            width: '220px',
+            padding: '12px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            zIndex: 90,
+            pointerEvents: 'none',
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+            <Assignment sx={{ color: '#4CAF50', fontSize: 18 }} />
+            <Typography variant="caption" sx={{ color: '#4CAF50', fontFamily: '"Press Start 2P", monospace', fontSize: '0.6rem' }}>
+              ACTIVE QUESTS
+            </Typography>
+          </Stack>
+          <Stack spacing={1}>
+            {activeQuests.map((quest) => (
+              <div key={quest.id}>
+                <Typography variant="caption" sx={{ color: 'white', display: 'block', mb: 0.5, fontSize: '0.75rem' }}>
+                  {quest.description}
+                </Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={Math.min(100, (quest.currentAmount / quest.targetAmount) * 100)}
+                  sx={{
+                    height: 4,
+                    borderRadius: 1,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    '& .MuiLinearProgress-bar': {
+                      bgcolor: '#4CAF50',
+                    },
+                  }}
+                />
+              </div>
+            ))}
+          </Stack>
+        </div>
+      )}
+
+      {/* Save Button */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '50px',
+          right: '16px',
+          zIndex: 110,
+          pointerEvents: 'auto',
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={1}>
+          {saveFeedback && (
+            <Typography variant="caption" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
+              GAME SAVED!
+            </Typography>
+          )}
+          <button
+            onClick={handleSave}
+            aria-label="save game"
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              border: '1px solid #4CAF50',
+              borderRadius: '4px',
+              padding: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#4CAF50',
+            }}
+          >
+            <SaveIcon fontSize="small" />
+          </button>
+        </Stack>
+      </div>
       {/* Top HUD Bar */}
       <div
         style={{

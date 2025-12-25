@@ -275,31 +275,31 @@ function WeatherEffects({ weather, intensity }: { weather: WeatherType; intensit
 // =============================================================================
 
 function GameLoop() {
-  const { updateTime, updateWeather, playerStats, addQuest, activeQuests, settings, worldState } = useGameStore()
   const { triggerRandomEvent } = useRandomEvents()
   const { checkQuests, generateQuest } = useQuestSystem()
   const lastEventCheck = useRef(0)
   const lastQuestCheck = useRef(0)
 
   useFrame((state, deltaTime) => {
-    updateTime(deltaTime)
-    updateWeather(deltaTime)
+    const store = useGameStore.getState()
+    store.updateTime(deltaTime)
+    store.updateWeather(deltaTime)
 
     // Check for random events every 10 seconds
-    if (settings.features.randomEvents && state.clock.elapsedTime - lastEventCheck.current > 10) {
-      const eventSeed = worldState.seed + Math.floor(state.clock.elapsedTime / 10)
+    if (store.settings.features.randomEvents && state.clock.elapsedTime - lastEventCheck.current > 10) {
+      const eventSeed = store.worldState.seed + Math.floor(state.clock.elapsedTime / 10)
       triggerRandomEvent(eventSeed)
       lastEventCheck.current = state.clock.elapsedTime
     }
 
     // Quest logic every 2 seconds
-    if (settings.features.quests && state.clock.elapsedTime - lastQuestCheck.current > 2) {
+    if (store.settings.features.quests && state.clock.elapsedTime - lastQuestCheck.current > 2) {
       checkQuests()
       
       // If no active quests, generate one
-      if (activeQuests.length === 0) {
-        const questSeed = worldState.seed + Math.floor(state.clock.elapsedTime / 2)
-        addQuest(generateQuest(playerStats.level, questSeed))
+      if (store.activeQuests.length === 0) {
+        const questSeed = store.worldState.seed + Math.floor(state.clock.elapsedTime / 2)
+        store.addQuest(generateQuest(store.playerStats.level, questSeed))
       }
       
       lastQuestCheck.current = state.clock.elapsedTime
