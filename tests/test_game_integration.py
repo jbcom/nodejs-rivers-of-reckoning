@@ -152,6 +152,8 @@ def test_game_headless_mode_player_movement_and_events():
         has_events = (g.player.health != start_health or
                       g.player.gold > 0 or
                       g.enemies_defeated > 0)
+        # Ensure that either movement or an event affected the player/game state
+        assert has_moved or has_events
         # At minimum we can verify the game state is consistent
         assert g.map is not None
         assert g.player is not None
