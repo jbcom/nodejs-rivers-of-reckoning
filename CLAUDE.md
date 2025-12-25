@@ -4,7 +4,7 @@
 
 ## 🌊 The Standalone Vision: The Legend of Rivers
 
-**Rivers of Reckoning** is a personal tribute turned into an atmospheric roguelike. While the TypeScript "Rivermarsh" focuses on literal geography, this Python standalone is the **Saga of Rivers**—a character-driven journey through a world that actively reacts to your progress.
+**Rivers of Reckoning** is a personal tribute turned into an atmospheric roguelike. All development is guided by the [Game Bible](GAME_BIBLE.md). While the TypeScript "Rivermarsh" focuses on literal geography, this Python standalone is the **Saga of Rivers**—a character-driven journey through a world that actively reacts to your progress.
 
 ## 📜 The Genesis: From Curses to 2.5D
 

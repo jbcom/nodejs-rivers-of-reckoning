@@ -6,7 +6,9 @@
 
 ## 🌊 The Legend of Rivers
 
-Unlike other titles that explore literal geography, this game is the story of a character named **Rivers** and his journey through an infinite, procedurally generated world. As Rivers explores, he must manage the **Reckoning**—a global threat meter that represents the world's increasing resistance to his journey.
+**Rivers of Reckoning** is an atmospheric survival roguelike RPG built exclusively with **Python and pygame-ce**. For a deep dive into the core mechanics, branding, and vision, see the [Game Bible](GAME_BIBLE.md).
+
+Originally created to inspire a love for programming in its namesake, Rivers, this game is a standalone **Hero's Saga** that focuses on the physical struggle against a world that actively fights your progress.
 
 ## 📜 The Genesis of Rivers
 

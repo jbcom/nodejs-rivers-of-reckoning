@@ -4,7 +4,7 @@
 
 ## 🌊 The Core Message: "Inspiring the Next Generation"
 
-**Rivers of Reckoning** was originally created to inspire a love for programming in the creator's stepson, **Rivers**. This Python standalone version is a **Hero's Saga**, focusing on the character's journey and the world's increasing resistance (The Reckoning).
+**Rivers of Reckoning** was originally created to inspire a love for programming in the creator's stepson, **Rivers**. This Python standalone version is a **Hero's Saga**, guided by the [Game Bible](GAME_BIBLE.md).
 
 ## 📜 Evolution: Curses -> 2.5D -> Legend
 
