@@ -1,19 +1,8 @@
-"""Rivers of Reckoning - A fully procedural RPG built with pygame-ce.
+"""
+Rivers of Reckoning - A 2.5D procedural roguelike RPG.
 
-Features infinite world generation using OpenSimplex noise,
-ECS architecture, dynamic biomes, and web deployment via pygbag.
+A hero's legacy is written in the steps they take against the Reckoning.
 """
 
 __version__ = "0.5.0"
-__author__ = "Your Name"
-__email__ = "you@example.com"
-__description__ = (
-    "A fully procedural Python RPG with infinite world generation, "
-    "ECS architecture, dynamic biomes, and web deployment via pygbag."
-)
-
-from .enemy import Enemy
-from .game import Game
-from .player import Player
-
-__all__ = ["Game", "Player", "Enemy"]
+__all__ = ["__version__"]

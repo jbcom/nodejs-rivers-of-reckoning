@@ -1,11 +1,9 @@
 name: Pygbag Web Build and Deploy
 
 on:
-  push:
-    branches: [ "main" ]
   release:
     types: [published]
-  workflow_dispatch:
+  workflow_dispatch:  # Keep for manual testing
 
 permissions:
   contents: read
