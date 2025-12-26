@@ -9,17 +9,17 @@
 
 ```bash
 # Using uv (recommended)
-uv add PACKAGE_NAME
+uv add rivers-of-reckoning
 
 # Using pip
-pip install PACKAGE_NAME
+pip install rivers-of-reckoning
 ```
 
 ## Install from Source
 
 ```bash
-git clone https://github.com/jbcom/PACKAGE_NAME.git
-cd PACKAGE_NAME
+git clone https://github.com/arcade-cabinet/rivers-of-reckoning.git
+cd rivers-of-reckoning
 uv sync
 ```
 
@@ -27,7 +27,7 @@ uv sync
 
 ```bash
 # Clone and install with dev dependencies
-git clone https://github.com/jbcom/PACKAGE_NAME.git
-cd PACKAGE_NAME
+git clone https://github.com/arcade-cabinet/rivers-of-reckoning.git
+cd rivers-of-reckoning
 uv sync --extra dev --extra docs
 ```

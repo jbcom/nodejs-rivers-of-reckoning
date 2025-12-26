@@ -114,8 +114,7 @@ The game uses the `esper` Entity Component System:
 │       ├── shop.py              # Shop system
 │       ├── procedural_enemies.py # Procedural enemy generation
 │       └── utils.py             # Utility functions
-├── main.py                      # Desktop entry point
-├── main_web.py                  # Web (pygbag) entry point
+├── main.py                      # Desktop and Web entry point (pygbag-ready)
 ├── pyproject.toml               # Project configuration (Hatch)
 └── README.md                    # This file
 ```

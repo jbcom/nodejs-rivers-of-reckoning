@@ -33,8 +33,8 @@ Development Setup
 
    .. code-block:: bash
 
-      git clone https://github.com/jbcom/nodejs-rivers-of-reckoning.git
-      cd nodejs-rivers-of-reckoning
+      git clone https://github.com/arcade-cabinet/rivers-of-reckoning.git
+      cd rivers-of-reckoning
 
 2. Install the project in editable mode:
 

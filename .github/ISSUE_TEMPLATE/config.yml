@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📚 Documentation
-    url: https://github.com/jbcom
+    url: https://github.com/arcade-cabinet
     about: Check the docs before filing an issue
   - name: 💬 Discussions
     url: https://github.com/orgs/jbcom/discussions
